@@ -4,6 +4,7 @@ from os import path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from middleware.connection import SuscriberSocket
+from operations.filter import Filter
 import middleware.constants as const
 
 class DataFilterReplicator(object):
