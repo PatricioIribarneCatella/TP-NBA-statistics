@@ -3,7 +3,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import SuscriberSocket, DispatcherSocket
+from middleware.connection import SuscriberSocket, DispatcherSocket, ReplicationSocket
 from operations.filter import Filter
 import middleware.constants as const
 
@@ -14,7 +14,9 @@ class DataFilterReplicator(object):
         self.socket = SuscriberSocket(port,
                 [const.NEW_DATA, const.END_DATA])
         
-        self.dispatchsocket = DispatcherSocket(dispatchport) 
+        self.dispatchsocket = DispatcherSocket(dispatchport)
+
+        self.signalsocket = ReplicationSocket(7777)
 
         self.filter = Filter(pattern)
 
@@ -48,7 +50,17 @@ class DataFilterReplicator(object):
 
     def _send_data(self, row):
 
-        self.dispatchsocket.send(row)
+        msg = ""
+
+        # Convert the row (dictionary) into
+        # a string to send
+        items = list(row.items())
+        
+        for it in items:
+            msg += it[0] + '=' + it[1] + '\n'
+
+        print(msg)
+        self.dispatchsocket.send(msg)
 
     def run(self):
  
@@ -62,6 +74,10 @@ class DataFilterReplicator(object):
                 self._send_data(row)
 
             mid, row = self._recv_data()
+
+        self.signalsocket.send("{tid} {data}".format(tid=const.END_DATA, data="END_DATA"))
+    
+        input("Enter to finish")
 
         print("Filter replicator finished")
 

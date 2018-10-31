@@ -4,7 +4,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from coordinators.filter_replicator import DataFilterReplicator
+from coordinators.filter_dispatcher import DataFilterReplicator
 
 def main(port, dport, pattern):
 

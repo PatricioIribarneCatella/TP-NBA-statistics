@@ -1,40 +1,92 @@
 import sys
+import zmq
 from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import SuscriberSocket, DispatcherSocket
+from operations.rows import RowReducer
+from operations.counters import LocalPointsCounter
+#from middleware.connection import WorkerSocket
 import middleware.constants as const
 
-class Dispatcher(object):
+class LocalPointsWorker(object):
 
-    def __init__(self, port, dispatchport):
-        
-        self.socket = SuscriberSocket(port,
-                [const.NEW_DATA, const.END_DATA])
-        
-        self.dispatchsocket = DispatcherSocket(dispatchport)
+    def __init__(self, port):
 
-    def _recv_data(self):
+        #self.socket = WorkerSocket(port)
+        self.row_reducer = RowReducer(["shot_result", "points"])
+        self.counter = LocalPointsCounter()
 
-        msg = self.socket.recv()
+    def _parse_data(self, msg):
 
-        # Split the id from the row
-        mid, row = msg.split(" ", 1)
+        # Split it into the different fields
+        msg = msg.split("\n")
 
-        return mid, row
+        # Pop the last element
+        # because the splitter leaves an
+        # empty string at the end
+        msg.pop()
+
+        return msg
+
+    def _process_data(self, row):
+
+        row = self._parse_data(row)
+
+        row = self.row_reducer.reduce(row)
+        self.counter.count(row)
 
     def run(self):
 
-        print("Local points dispatcher started")
+        print("Local points worker started")
 
-        mid, row = self._recv_data()
+        context = zmq.Context()
 
-        while (int(mid) == const.NEW_DATA):
+        # Channel to receive work
+        work_socket = context.socket(zmq.PULL)
+        work_socket.connect("tcp://localhost:6666")
+
+        # Channel to receive 'end' message
+        control_socket = context.socket(zmq.SUB)
+        control_socket.connect("tcp://localhost:7777")
+        control_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+
+        # Poller multiplexer
+        poller = zmq.Poller()
+        poller.register(work_socket, zmq.POLLIN)
+        poller.register(control_socket, zmq.POLLIN)
+
+        quit = False
+        end_data = False
+
+        while not quit:
             
-            self.dispatchsocket.send(row)
+            # Set the polling with a
+            # time-out of 0.5 seconds
+            socks = dict(poller.poll(0))
 
-            mid, row = self._recv_data()
+            # Message come from the dispatcher
+            if socks.get(work_socket) == zmq.POLLIN:
+                work_msg = work_socket.recv_string()
+                print(work_msg)
+                self._process_data(work_msg)
+            elif end_data:
+                quit = True
 
+            # Message come from dispatcher to end
+            if socks.get(control_socket) == zmq.POLLIN:
+                print("\nHolaaaaaaaaaaaaaaaaaa\n")
+                control_msg = control_socket.recv_string()
+                if control_msg == "0 END_DATA":
+                    end_data = True
+
+
+        count = self.counter.get_count()
+        two_points_stats = count["two_ok"]/count["total_two"]
+        three_points_stats = count["three_ok"]/count["total_three"]
+
+        print("2 pts:{}, 3 pts:{}".format(two_points_stats, three_points_stats))
         print("Local points finished")
+
+
 
