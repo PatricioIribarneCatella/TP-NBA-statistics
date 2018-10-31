@@ -77,7 +77,7 @@ class DataFilterReplicator(object):
 
         self.signalsocket.send("{tid} {data}".format(tid=const.END_DATA, data="END_DATA"))
     
-        input("Enter to finish")
+        #input("Enter to finish")
 
         print("Filter replicator finished")
 

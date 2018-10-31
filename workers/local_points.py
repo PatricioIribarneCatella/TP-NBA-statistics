@@ -51,6 +51,10 @@ class LocalPointsWorker(object):
         control_socket.connect("tcp://localhost:7777")
         control_socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
+        # Channel to send counter result ro 'Joiner'
+        join_socket = context.socket(zmq.PUSH)
+        join_socket.connect("tcp://localhost:8888")
+
         # Poller multiplexer
         poller = zmq.Poller()
         poller.register(work_socket, zmq.POLLIN)
@@ -62,8 +66,8 @@ class LocalPointsWorker(object):
         while not quit:
             
             # Set the polling with a
-            # time-out of 0.5 seconds
-            socks = dict(poller.poll(0))
+            # time-out of 1 second
+            socks = dict(poller.poll(1000))
 
             # Message come from the dispatcher
             if socks.get(work_socket) == zmq.POLLIN:
@@ -75,18 +79,23 @@ class LocalPointsWorker(object):
 
             # Message come from dispatcher to end
             if socks.get(control_socket) == zmq.POLLIN:
-                print("\nHolaaaaaaaaaaaaaaaaaa\n")
                 control_msg = control_socket.recv_string()
                 if control_msg == "0 END_DATA":
                     end_data = True
 
-
+        # Send result to 'Joiner'
         count = self.counter.get_count()
+
+        join_socket.send_string("{} {} {} {}".format(
+                                count["two_ok"],
+                                count["total_two"],
+                                count["three_ok"],
+                                count["total_three"]))
+        
         two_points_stats = count["two_ok"]/count["total_two"]
         three_points_stats = count["three_ok"]/count["total_three"]
 
         print("2 pts:{}, 3 pts:{}".format(two_points_stats, three_points_stats))
         print("Local points finished")
-
 
 
