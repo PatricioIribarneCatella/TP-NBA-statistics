@@ -33,11 +33,26 @@ class SuscriberSocket(object):
         # Connect to publisher
         self.socket.connect("tcp://localhost:{}".format(port))
 
-        # Set the suscriber topic
-        self.socket.setsockopt_string(zmq.SUBSCRIBE, str(topicids))
-        self.socket.setsockopt_string(zmq.SUBSCRIBE, str(const.END_DATA))
+        # Set the suscriber topics
+        for tid in topicids:
+            self.socket.setsockopt_string(zmq.SUBSCRIBE, str(topicids[tid]))
 
     def recv(self):
 
         return self.socket.recv_string()
+
+class DispatcherSocket(object):
+
+    def __init__(self, port):
+
+        # Get the context and create the socket
+        context = zmq.Context()
+        self.socket = context.socket(zmq.PUSH)
+
+        # Bind the 'dispatcher'/'pusher' socket
+        self.socket.bind("tcp://0.0.0.0:{}".format(port))
+
+    def send(self, msg):
+
+        self.socket.send_string(msg)
 

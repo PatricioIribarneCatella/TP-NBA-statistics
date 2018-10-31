@@ -66,4 +66,7 @@ class DataReplicator(object):
         self._send_data(data)
 
         # Stats finished
+        input('Enter to finish')
+
+
 

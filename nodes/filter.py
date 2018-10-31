@@ -6,9 +6,9 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from coordinators.filter_replicator import DataFilterReplicator
 
-def main(port):
+def main(port, dport, pattern):
 
-    replicator = DataFilterReplicator(port)
+    replicator = DataFilterReplicator(port, dport, pattern)
 
     replicator.run()
 
@@ -25,6 +25,16 @@ if __name__ == '__main__':
             default=5555,
             help='The port to connect to replicator server'
     )
+    parser.add_argument(
+            '--dport',
+            type=int,
+            default=6666,
+            help='The dispatcher port'
+    )
+    parser.add_argument(
+            '--pattern',
+            help='The pattern to filter in'
+    )
     args = parser.parse_args()
 
-    main(args.port)
+    main(args.port, args.dport, args.pattern)
