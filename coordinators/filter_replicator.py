@@ -11,15 +11,21 @@ class DataFilterReplicator(object):
 
     def __init__(self, port):
         self.socket = SuscriberSocket(port, const.NEW_DATA)
-        self.filter = Filter("shoot_result=SCORED")
+        self.filter = Filter("shot_result=SCORED")
 
-    def _process_data(self, row):
-        
-        return self.filter.filter(row)
+    def _parse_data(self, msg):
 
-    def _parse_data(self, row):
+        # Split the id from the row
+        mid, row = msg.split(" ", 1)
+
+        if (mid == const.END_DATA):
+            return mid, ""
 
         row = row.split('\n')
+        
+        # Becuase the last element is an empty
+        # string becuase of the splitter 
+        row.pop()
 
         d = {}
 
@@ -27,7 +33,7 @@ class DataFilterReplicator(object):
             k, v = item.split('=')
             d[k] = v
 
-        return d
+        return mid, d
 
     def _recv_data(self):
 
@@ -40,12 +46,15 @@ class DataFilterReplicator(object):
 
     def run(self):
  
-        row = self._recv_data()
+        print("Filter replicator started")
 
-        while (int(row['id']) == const.NEW_DATA):
+        mid, row = self._recv_data()
 
-            if self._process_data(row)
+        while (int(mid) == const.NEW_DATA):
+
+            if self.filter.filter(row):
                 self._send_data(row)
 
-            row = self._recv_data()
+            mid, row = self._recv_data()
 
+        print("Filter replicator finished")

@@ -54,7 +54,7 @@ class DataReplicator(object):
             self.socket.send(msg)
             #print(msg)
 
-        self.socket.send("{data_id}".format(data_id=const.END_DATA))
+        self.socket.send("{data_id} END_DATA".format(data_id=const.END_DATA))
 
     def run(self):
 

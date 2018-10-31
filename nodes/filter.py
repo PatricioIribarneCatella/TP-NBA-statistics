@@ -13,7 +13,7 @@ def main(port):
     replicator.run()
 
 
-if __name__ == '__name__':
+if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
                     description='Scored Filter NBA',

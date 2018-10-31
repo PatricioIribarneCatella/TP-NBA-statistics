@@ -1,6 +1,10 @@
+import sys
 import zmq
+from os import path
 
-import constants as const
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+import middleware.constants as const
 
 class ReplicationSocket(object):
 
@@ -20,19 +24,20 @@ class ReplicationSocket(object):
 
 class SuscriberSocket(object):
 
-    def __init__(self, port):
+    def __init__(self, port, topicids):
 
         # Get the context and create the socket
         context = zmq.Context()
         self.socket = context.socket(zmq.SUB)
-
-        # Set the suscriber topic
-        self.socket.setsockopt_string(zmq.SUSCRIBE, const.NEW_DATA)
-        self.socket.setsockopt_string(zmq.SUSCRIBE, const.END_DATA)
-
+        
         # Connect to publisher
         self.socket.connect("tcp://localhost:{}".format(port))
+
+        # Set the suscriber topic
+        self.socket.setsockopt_string(zmq.SUBSCRIBE, str(topicids))
+        self.socket.setsockopt_string(zmq.SUBSCRIBE, str(const.END_DATA))
 
     def recv(self):
 
         return self.socket.recv_string()
+

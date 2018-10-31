@@ -1,15 +1,12 @@
+#
+# Filter In class
+#
 class Filter(object):
 
     def __init__(self, pattern):
-        self.pattern = pattern.split('=')
+        self.field, self.value = pattern.split('=')
 
-    def filter(row):
-        # [field1=value1, field2=value2, ...]
-        items = row.split('\n')
+    def filter(self, row):
         
-        for it in items:
-            if it == self.pattern:
-                return True
-
-        return False
+        return row[self.field] == self.value
             
