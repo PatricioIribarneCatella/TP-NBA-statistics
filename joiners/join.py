@@ -4,6 +4,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
+from middleware.connection import GatherSocket
 import middleware.constants as const
 
 #
@@ -11,10 +12,9 @@ import middleware.constants as const
 #
 class JoinCounter(object):
 
-    def __init__(self, port):
-        context = zmq.Context()
-        self.socket = context.socket(zmq.PULL)
-        self.socket.bind("tcp://0.0.0.0:{}".format(port))
+    def __init__(self, port, workers):
+        self.workers = workers
+        self.socket = GatherSocket(port)
 
     def run(self):
         
@@ -26,9 +26,9 @@ class JoinCounter(object):
         total_three_points = 0
         three_ok = 0
 
-        while i < 2:
+        while i < self.workers:
            
-            msg = self.socket.recv_string()
+            msg = self.socket.recv()
 
             two_scored, total_two, three_scored, total_three = msg.split(" ")
 

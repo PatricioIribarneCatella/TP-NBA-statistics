@@ -6,9 +6,9 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from workers.local_points import LocalPointsWorker
 
-def main(port):
+def main(wport, jport):
 
-    worker = LocalPointsWorker(port)
+    worker = LocalPointsWorker(wport, jport)
 
     worker.run()
 
@@ -24,7 +24,13 @@ if __name__ == '__main__':
             default=6666,
             help='The port to receive data from dispatcher'
     )
+    parser.add_argument(
+            '--jport',
+            type=int,
+            default=8888,
+            help='The port to send processed data'
+    )
     args = parser.parse_args()
 
-    main(args.port)
+    main(args.port, args.jport)
 
