@@ -36,7 +36,7 @@ class SuscriberSocket(object):
 
         # Set the suscriber topics
         for tid in topicids:
-            self.socket.setsockopt_string(zmq.SUBSCRIBE, str(topicids[tid]))
+            self.socket.setsockopt_string(zmq.SUBSCRIBE, str(tid))
 
     def recv(self):
 

@@ -91,8 +91,7 @@ class MatchSummaryWorker(object):
             if self.socket.test(socks, "work"):
                 work_msg = self.socket.recv(socks, "work")
                 work_msg = self._process_data(work_msg)
-                #self.socket.send("join", work_msg)
-                print(work_msg)
+                self.socket.send("join", work_msg)
             elif end_data:
                 quit = True
 
