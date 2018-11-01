@@ -25,7 +25,6 @@ class DataReplicator(object):
                 reader = csv.DictReader(csvf)
                 for row in reader:
                     self._send_data(row)
-                    #rows.append(row)
 
         return rows
 
@@ -53,19 +52,15 @@ class DataReplicator(object):
         msg = "{data_id} {data_row}".format(data_id=const.NEW_DATA, data_row=row)
         self.socket.send(msg)
 
-
     def run(self):
 
         # Wait for user to start
         input('Enter to start')
         self._parse_data()
         
-        #self._send_data(data)
-
         self.socket.send("{data_id} END_DATA".format(data_id=const.END_DATA))
         
         # Stats finished
         input('Enter to finish')
-
 
 
