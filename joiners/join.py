@@ -1,11 +1,9 @@
 import sys
-import zmq
 from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from middleware.connection import GatherSocket
-import middleware.constants as const
 
 #
 # format(msg) -> two_ok total_two three_ok total_three_points

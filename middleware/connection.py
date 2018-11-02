@@ -46,16 +46,13 @@ class SuscriberSocket(object):
         self.socket.close()
         self.context.term()
 
-class DispatcherSocket(object):
+class PusherSocket(object):
 
     def __init__(self, port):
-
+        
         # Get the context and create the socket
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PUSH)
-
-        # Bind the 'dispatcher'/'pusher' socket
-        self.socket.bind("tcp://0.0.0.0:{}".format(port))
 
     def send(self, msg):
 
@@ -65,13 +62,31 @@ class DispatcherSocket(object):
         self.socket.close()
         self.context.term()
 
+class DispatcherSocket(PusherSocket):
+
+    def __init__(self, port):
+
+        super(DispatcherSocket, self).__init__(port)
+
+        # Bind the 'dispatcher'/'pusher' socket
+        self.socket.bind("tcp://0.0.0.0:{}".format(port))
+
+class ProducerSocket(PusherSocket):
+
+    def __init__(self, port):
+        
+        super(ProducerSocket, self).__init__(port)
+
+        # Connect the 'dispatcher'/'pusher' socket
+        self.socket.connect("tcp://localhost:{}".format(port))
+
 class GatherSocket(object):
 
     def __init__(self, port):
 
         # Get the context and create the socket
-        context = zmq.Context()
-        self.socket = context.socket(zmq.PULL)
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.PULL)
         
         # Bind the 'gather'/'puller' socket
         self.socket.bind("tcp://0.0.0.0:{}".format(port))
@@ -135,4 +150,8 @@ class WorkerSocket(object):
 
         send.poll_sockets[sock_name].send_string(data)
 
-
+    def close(self):
+        self.work_socket.close()
+        self.control_socket.close()
+        self.join_socket.close()
+        self.context.term()

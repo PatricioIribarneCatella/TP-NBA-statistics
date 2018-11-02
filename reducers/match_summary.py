@@ -3,15 +3,16 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import SuscriberSocket, DispatcherSocket
+from middleware.connection import SuscriberSocket, ProducerSocket
 import middleware.constants as const
 
 class MatchSummaryReducer(object):
 
     def __init__(self, rid, reduce_port, join_port, workers):
         self.reduce_socket = SuscriberSocket(reduce_port, [rid, const.END_DATA])
-        self.summary_socket = DispatcherSocket(join_port)
+        self.summary_socket = ProducerSocket(join_port)
         self.num_workers = workers
+        
         # It stores (key, value) like this:
         #   - key=("home_team"(str), "away_team"(str), "date"(date))
         #   - value=[home_points(int), away_points(int)]
@@ -49,7 +50,28 @@ class MatchSummaryReducer(object):
 
     def _send_data(self):
 
-        print(self.data)
+        # Send all the reduced data
+        for match in self.data.items():
+        
+            match_info = match[0]
+            match_result = match[1]
+
+            home_team = match_info[0].split("=")[1]
+            away_team = match_info[1].split("=")[1]
+            date = match_info[2].split("=")[1]
+            home_points = match_result[0]
+            away_points = match_result[1]
+
+            msg = "{} {} {} {}, {}".format(home_team,
+                                       home_points,
+                                       away_points,
+                                       away_team,
+                                       date)
+
+            self.summary_socket.send(msg)
+
+        # Send 'end' message
+        self.summary_socket.send("END_DATA")
 
     def run(self):
 
