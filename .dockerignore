@@ -1,0 +1,6 @@
+*.sh
+.env
+.gitignore
+.git/
+*.md
+
