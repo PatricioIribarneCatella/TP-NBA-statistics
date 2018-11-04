@@ -15,9 +15,5 @@ do
 	python3 nodes/match_summary_reducer.py --rport=9999 --jport=10000 --rid=$id &
 done
 
-#python3 nodes/match_summary_reducer.py --rport=9999 --jport=10000 --rid=1 &
-#python3 nodes/match_summary_reducer.py --rport=9999 --jport=10000 --rid=2 &
-#python3 nodes/match_summary_reducer.py --rport=9999 --jport=10000 --rid=3 &
-
 python3 nodes/match_summary.py --jport=10000 --reducers=3 &
 
