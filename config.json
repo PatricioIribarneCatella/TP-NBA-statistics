@@ -13,6 +13,12 @@
 		"bind": {
 			"ip": "0.0.0.0",
 			"port": 5554
+		},
+		"signal": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 7777
+			}
 		}
 	},
 	"filter-topk": {
@@ -23,7 +29,14 @@
 		"bind": {
 			"ip": "0.0.0.0",
 			"port": 5555
+		},
+		"signal": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 8888
+			}
 		}
+
 	},
 	"filter-local-points": {
 		"connect": {
@@ -33,36 +46,77 @@
 		"bind":{
 			"ip": "0.0.0.0",
 			"port": 5556
+		},
+		"signal": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 9999
+			}
 		}
+
 	},
 	"worker-match-summary": {
 		"nodes": {
-			"filter-match-summary": {
+			"filter": {
 				"connect": {
 					"ip": "localhost",
 					"port": 5554
 				}
 			},
-			"proxy-match-summary": {
+			"proxy": {
 				"connect": {
 					"ip": "localhost",
 					"port": 6664
+				}
+			},
+			"signal": {
+				"connect": {
+					"ip": "localhost",
+					"port": 7777
 				}
 			}
 		}
 	},
 	"worker-topk": {
 		"nodes": {
-			"filter-topk": {
+			"filter": {
 				"connect": {
 					"ip": "localhost",
 					"port": 5555
 				}
 			},
-			"proxy-topk": {
+			"proxy": {
 				"connect": {
 					"ip": "localhost",
 					"port": 6665
+				}
+			},
+			"signal": {
+				"connect": {
+					"ip": "localhost",
+					"port": 8888
+				}
+			}
+		}
+	},
+	"worker-local-points": {
+		"nodes": {
+			"filter": {
+				"connect": {
+					"ip": "localhost",
+					"port": 5556
+				}
+			},
+			"proxy": {
+				"connect": {
+					"ip": "localhost",
+					"port": 9994
+				}
+			},
+			"signal": {
+				"connect": {
+					"ip": "localhost",
+					"port": 9999
 				}
 			}
 		}
@@ -89,13 +143,13 @@
 	},
 	"reducer-match-summary": {
 		"nodes": {
-			"proxy-match-summary": {
+			"proxy": {
 				"connect": {
 					"ip": "localhost",
 					"port": 7774
 				}
 			},
-			"match-summary": {
+			"joiner": {
 				"connect": {
 					"ip": "localhost",
 					"port": 8884
@@ -105,13 +159,13 @@
 	},
 	"reducer-topk": {
 		"nodes": {
-			"proxy-topk": {
+			"proxy": {
 				"connect": {
 					"ip": "localhost",
 					"port": 7775
 				}
 			},
-			"topk": {
+			"joiner": {
 				"connect": {
 					"ip": "localhost",
 					"port": 8885

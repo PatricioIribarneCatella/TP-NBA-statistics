@@ -20,12 +20,7 @@ class DataFilterReplicator(object):
 
         # Internal socket to send signal
         # to stop running
-        conf = {
-            "bind": {
-                "ip": "0.0.0.0",
-                "port": 7777
-            }
-        }
+        conf = config["filter-match-summary"]["signal"]
         self.signalsocket = ReplicationSocket(conf)
 
         self.filter = Filter(pattern)

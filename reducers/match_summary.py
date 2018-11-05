@@ -10,8 +10,8 @@ class MatchSummaryReducer(object):
 
     def __init__(self, rid, workers, config):
 
-        reducer_to_proxy = config["reducer-match-summary"]["nodes"]["proxy-match-summary"]
-        reducer_to_summary = config["reducer-match-summary"]["nodes"]["match-summary"]
+        reducer_to_proxy = config["reducer-match-summary"]["nodes"]["proxy"]
+        reducer_to_summary = config["reducer-match-summary"]["nodes"]["joiner"]
 
         self.reduce_socket = SuscriberSocket(reducer_to_proxy, [rid])
         self.summary_socket = ProducerSocket(reducer_to_summary)

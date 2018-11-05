@@ -6,7 +6,7 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from middleware.connection import GatherSocket
 
 #
-# format(msg) -> home_team home_points away_points away_team\n
+# format(msg) -> home_team home_points away_points away_team
 #
 class MatchSummary(object):
 

@@ -124,19 +124,22 @@ class WorkerSocket(object):
         net_config = config["nodes"]
 
         # Channel to receive work
-        net_to_filter = net_config["filter-match-summary"]["connect"]
+        net_to_filter = net_config["filter"]["connect"]
         self.work_socket = self.context.socket(zmq.PULL)
         self.work_socket.connect("tcp://{}:{}".format(
                                     net_to_filter["ip"],
                                     net_to_filter["port"]))
 
         # Channel to receive stop signal
+        net_to_signal = net_config["signal"]["connect"]
         self.control_socket = self.context.socket(zmq.SUB)
-        self.control_socket.connect("tcp://localhost:7777")
+        self.control_socket.connect("tcp://{}:{}".format(
+                                        net_to_signal["ip"],
+                                        net_to_signal["port"]))
         self.control_socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
         # Channel to send processed work
-        net_to_proxy = net_config["proxy-match-summary"]["connect"]
+        net_to_proxy = net_config["proxy"]["connect"]
         self.join_socket = self.context.socket(zmq.PUSH)
         self.join_socket.connect("tcp://{}:{}".format(
                                     net_to_proxy["ip"],
