@@ -37,8 +37,10 @@ class JoinCounter(object):
 
             i += 1
 
-        print("2 pts: {}%, 3 pts: {}%".format(two_ok/total_two_points,
-                                              three_ok/total_three_points))
+        2_points = round(two_ok/total_two_points, 4) * 100
+        3_points = round(three_ok/total_three_points, 4) * 100 
+
+        print("2 pts: {}%, 3 pts: {}%".format(2_points, 3_points))
 
         print("Join counter finished")
 

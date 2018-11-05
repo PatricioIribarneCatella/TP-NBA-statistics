@@ -31,4 +31,7 @@ class MatchSummary(object):
                 print(msg)
 
         self.socket.close()
+
         print("Match summary finished")
+
+

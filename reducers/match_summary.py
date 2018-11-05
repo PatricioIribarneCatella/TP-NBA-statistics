@@ -4,7 +4,6 @@ from os import path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from middleware.connection import SuscriberSocket, ProducerSocket
-import middleware.constants as const
 
 class MatchSummaryReducer(object):
 

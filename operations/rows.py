@@ -1,3 +1,8 @@
+# Contracts a Row in the following way:
+#
+# - Returns only the items "field=value"
+#   in which the 'field' is in 'fields'
+#
 class RowReducer(object):
 
     def __init__(self, fields):
@@ -13,10 +18,10 @@ class RowReducer(object):
             
             if field in self.fields:
                 result.append(item)
-
+                
         return result
 
-# Expand a Row in the following way:
+# Expands a Row in the following way:
 #
 # - Checks if 'check_field' (field=value)
 #   is the same and adds a new

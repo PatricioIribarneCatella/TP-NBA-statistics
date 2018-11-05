@@ -38,7 +38,7 @@ class MatchSummaryProxy(Proxy):
 
     def __init__(self, config):
         super(MatchSummaryProxy, self).__init__(
-                            "match-summary-proxy",
+                            "proxy-match-summary",
                             config
         )
 
@@ -46,7 +46,7 @@ class TopkProxy(Proxy):
 
     def __init__(self, config):
         super(TopkProxy, self).__init__(
-                        "topk-proxy",
+                        "proxy-topk",
                         config
         )
 
