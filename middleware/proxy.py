@@ -1,11 +1,11 @@
 import zmq
 
-class WorkerReducerProxy(object):
+class Proxy(object):
 
-    def __init__(self, config):
+    def __init__(self, node, config):
 
-        in_config = config["proxy-match-summary"]["in"]
-        out_config = config["proxy-match-summary"]["out"]
+        in_config = config[node]["in"]
+        out_config = config[node]["out"]
 
         # Get the context and create the sockets
         self.context = zmq.Context()
@@ -22,7 +22,7 @@ class WorkerReducerProxy(object):
 
     def run(self):
 
-        print("Worker-Reducer Proxy started")
+        print("Proxy started")
 
         while True:
 
@@ -33,4 +33,20 @@ class WorkerReducerProxy(object):
         self.sub_socket.close()
         self.pub_socket.close()
         self.context.term()
+
+class MatchSummaryProxy(Proxy):
+
+    def __init__(self, config):
+        super(MatchSummaryProxy, self).__init__(
+                            "match-summary-proxy",
+                            config
+        )
+
+class TopkProxy(Proxy):
+
+    def __init__(self, config):
+        super(TopkProxy, self).__init__(
+                        "topk-proxy",
+                        config
+        )
 
