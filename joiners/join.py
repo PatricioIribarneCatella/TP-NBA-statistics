@@ -12,7 +12,7 @@ class JoinCounter(object):
 
     def __init__(self, workers, config):
         self.workers = workers
-        self.socket = GatherSocket(port)
+        self.socket = GatherSocket(config["local-points"])
 
     def run(self):
         

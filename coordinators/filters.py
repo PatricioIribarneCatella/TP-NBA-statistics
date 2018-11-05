@@ -7,20 +7,20 @@ from middleware.connection import SuscriberSocket, DispatcherSocket, Replication
 from operations.filter import Filter
 import middleware.constants as const
 
-class DataFilterReplicator(object):
+class FilterReplicator(object):
 
-    def __init__(self, pattern, config):
+    def __init__(self, pattern, node, config):
         
         self.socket = SuscriberSocket(
-                    config["filter-match-summary"],
+                    config[node],
                     [const.NEW_DATA, const.END_DATA])
         
         self.dispatchsocket = DispatcherSocket(
-                    config["filter-match-summary"])
+                    config[node])
 
         # Internal socket to send signal
         # to stop running
-        conf = config["filter-match-summary"]["signal"]
+        conf = config[node]["signal"]
         self.signalsocket = ReplicationSocket(conf)
 
         self.filter = Filter(pattern)
@@ -69,7 +69,7 @@ class DataFilterReplicator(object):
 
     def run(self):
  
-        print("Filter replicator started")
+        print("Filter started")
 
         mid, row = self._recv_data()
 
@@ -82,5 +82,32 @@ class DataFilterReplicator(object):
 
         self.signalsocket.send("{tid} {data}".format(tid=const.END_DATA, data="END_DATA"))
 
-        print("Filter replicator finished")
+        print("Filter finished")
+
+class MatchSummaryFilter(FilterReplicator):
+
+    def __init__(self, config):
+        super(MatchSummaryFilter, self).__init__(
+                            "shot_result=SCORED",
+                            "filter-match-summary",
+                            config
+        )
+
+class LocalPointsFilter(FilterReplicator):
+
+    def __init__(self, config):
+        super(LocalPointsFilter, self).__init__(
+                            "home_scored=Yes",
+                            "filter-local-points",
+                            config
+        )
+
+class TopkFilter(FilterReplicator):
+
+    def __init__(self, config):
+        super(TopkFilter, self).__init__(
+                        "shot_result=SCORED",
+                        "filter-topk",
+                        config
+        )
 

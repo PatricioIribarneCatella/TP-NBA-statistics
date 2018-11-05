@@ -5,14 +5,14 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from coordinators.filter_dispatcher import DataFilterReplicator
+from coordinators.filters import LocalPointsFilter
 
-def main(pattern, config):
+def main(config):
 
     with open(config) as f:
         config_data = json.load(f)
 
-    replicator = DataFilterReplicator(pattern, config_data)
+    replicator = LocalPointsFilter(config_data)
 
     replicator.run()
 
@@ -20,17 +20,15 @@ def main(pattern, config):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-                    description='Scored Filter NBA',
+                    description='Local Points Filter - NBA',
                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
             '--config',
             help='The Net Topology configuration file'
     )
-    parser.add_argument(
-            '--pattern',
-            help='The pattern to filter in'
-    )
+
     args = parser.parse_args()
 
-    main(args.pattern, args.config)
+    main(args.config)
+

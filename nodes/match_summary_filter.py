@@ -5,35 +5,30 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from joiners.join import JoinCounter
+from coordinators.filters import MatchSummaryFilter
 
-def main(workers, config):
+def main(config):
 
     with open(config) as f:
         config_data = json.load(f)
 
-    joiner = JoinCounter(workers, config_data)
+    replicator = MatchSummaryFilter(config_data)
 
-    joiner.run()
+    replicator.run()
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-                    description='Scored Filter NBA',
+                    description='Match summary Filter NBA',
                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
             '--config',
             help='The Net Topology configuration file'
     )
-    parser.add_argument(
-            '--workers',
-            type=int,
-            default=1,
-            help='The quantity of workers connected to it'
-    )
 
     args = parser.parse_args()
 
-    main(args.workers, args.config)
+    main(args.config)
+
