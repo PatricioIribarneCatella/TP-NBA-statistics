@@ -1,4 +1,5 @@
 import sys
+import json
 import argparse
 from os import path
 
@@ -6,9 +7,12 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from middleware.proxy import WorkerReducerProxy
 
-def main(xsub_port, xpub_port):
+def main(config):
 
-    proxy = WorkerReducerProxy(xsub_port, xpub_port)
+    with open(config) as f:
+        config_data = json.load(f)
+
+    proxy = WorkerReducerProxy(config_data)
 
     proxy.run()
 
@@ -19,18 +23,11 @@ if __name__ == '__main__':
                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
-            '--wport',
-            type=int,
-            default=6666,
-            help='The port to receive data from workers'
+            '--config',
+            help='The Net Topology configuration file'
     )
-    parser.add_argument(
-            '--rport',
-            type=int,
-            default=8888,
-            help='The port to send processed data to reducers'
-    )
+    
     args = parser.parse_args()
 
-    main(args.wport, args.rport)
+    main(args.config)
 

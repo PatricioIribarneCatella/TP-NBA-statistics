@@ -9,14 +9,24 @@ import middleware.constants as const
 
 class DataFilterReplicator(object):
 
-    def __init__(self, port, dispatchport, pattern):
+    def __init__(self, pattern, config):
         
-        self.socket = SuscriberSocket(port,
-                [const.NEW_DATA, const.END_DATA])
+        self.socket = SuscriberSocket(
+                    config["filter-match-summary"],
+                    [const.NEW_DATA, const.END_DATA])
         
-        self.dispatchsocket = DispatcherSocket(dispatchport)
+        self.dispatchsocket = DispatcherSocket(
+                    config["filter-match-summary"])
 
-        self.signalsocket = ReplicationSocket(7777)
+        # Internal socket to send signal
+        # to stop running
+        conf = {
+            "bind": {
+                "ip": "0.0.0.0",
+                "port": 7777
+            }
+        }
+        self.signalsocket = ReplicationSocket(conf)
 
         self.filter = Filter(pattern)
 
@@ -76,8 +86,6 @@ class DataFilterReplicator(object):
             mid, row = self._recv_data()
 
         self.signalsocket.send("{tid} {data}".format(tid=const.END_DATA, data="END_DATA"))
-    
-        #input("Enter to finish")
 
         print("Filter replicator finished")
 

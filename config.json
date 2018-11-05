@@ -1,4 +1,10 @@
 {
+	"main": {
+		"bind": {
+			"ip": "0.0.0.0",
+			"port": 4444
+		}
+	},
 	"filter-match-summary": {
 		"connect": {
 			"ip": "localhost",
@@ -30,32 +36,36 @@
 		}
 	},
 	"worker-match-summary": {
-		"connect": [
-			{
-				"node": "filter-match-summary",
-				"ip": "localhost",
-				"port": 5554
+		"nodes": {
+			"filter-match-summary": {
+				"connect": {
+					"ip": "localhost",
+					"port": 5554
+				}
 			},
-			{
-				"node": "proxy-match-summary",
-				"ip": "localhost",
-				"port": 6664
+			"proxy-match-summary": {
+				"connect": {
+					"ip": "localhost",
+					"port": 6664
+				}
 			}
-		]
+		}
 	},
 	"worker-topk": {
-		"connect": [
-			{
-				"node": "filter-topk",
-				"ip": "localhost",
-				"port": 5555
+		"nodes": {
+			"filter-topk": {
+				"connect": {
+					"ip": "localhost",
+					"port": 5555
+				}
 			},
-			{
-				"node": "proxy-topk",
-				"ip": "localhost",
-				"port": 6665
+			"proxy-topk": {
+				"connect": {
+					"ip": "localhost",
+					"port": 6665
+				}
 			}
-		]
+		}
 	},
 	"proxy-match-summary": {
 		"in": {
@@ -78,32 +88,36 @@
 		}
 	},
 	"reducer-match-summary": {
-		"connect": [
-			{
-				"node": "proxy-match-summary",
-				"ip": "localhost",
-				"port": 7774
+		"nodes": {
+			"proxy-match-summary": {
+				"connect": {
+					"ip": "localhost",
+					"port": 7774
+				}
 			},
-			{
-				"node": "match-summary",
-				"ip": "localhost",
-				"port": 8884
+			"match-summary": {
+				"connect": {
+					"ip": "localhost",
+					"port": 8884
+				}
 			}
-		]
+		}
 	},
 	"reducer-topk": {
-		"connect": [
-			{
-				"node": "proxy-topk",
-				"ip": "localhost",
-				"port": 7775
+		"nodes": {
+			"proxy-topk": {
+				"connect": {
+					"ip": "localhost",
+					"port": 7775
+				}
 			},
-			{
-				"node": "topk",
-				"ip": "localhost",
-				"port": 8885
+			"topk": {
+				"connect": {
+					"ip": "localhost",
+					"port": 8885
+				}
 			}
-		]
+		}
 	},
 	"match-summary": {
 		"bind": {

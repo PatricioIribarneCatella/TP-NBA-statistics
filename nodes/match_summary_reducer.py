@@ -1,4 +1,5 @@
 import sys
+import json
 import argparse
 from os import path
 
@@ -6,9 +7,12 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from reducers.match_summary import MatchSummaryReducer
 
-def main(rid, reduce_port, join_port, num_workers):
+def main(rid, num_workers, config):
 
-    reducer = MatchSummaryReducer(rid, reduce_port, join_port, num_workers)
+    with open(config) as f:
+        config_data = json.load(f)
+
+    reducer = MatchSummaryReducer(rid, num_workers, config_data)
 
     reducer.run()
 
@@ -19,16 +23,8 @@ if __name__ == '__main__':
                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
-            '--rport',
-            type=int,
-            default=6666,
-            help='The port to receive data from workers'
-    )
-    parser.add_argument(
-            '--jport',
-            type=int,
-            default=8888,
-            help='The port to send reduced data'
+            '--config',
+            help='The Net Topology configuration file'
     )
     parser.add_argument(
             '--rid',
@@ -42,7 +38,8 @@ if __name__ == '__main__':
             default=1,
             help='The number of summary workers'
     )
+
     args = parser.parse_args()
 
-    main(args.rid, args.rport, args.jport, args.workers)
+    main(args.rid, args.workers, args.config)
 

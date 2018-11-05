@@ -1,4 +1,5 @@
 import sys
+import json
 import argparse
 from os import path
 
@@ -6,9 +7,12 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from workers.matches_summary import MatchSummaryWorker
 
-def main(wport, jport, reducers):
+def main(reducers, config):
 
-    worker = MatchSummaryWorker(wport, jport, reducers)
+    with open(config) as f:
+        config_data = json.load(f)
+
+    worker = MatchSummaryWorker(reducers, config_data)
 
     worker.run()
 
@@ -19,16 +23,8 @@ if __name__ == '__main__':
                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
-            '--port',
-            type=int,
-            default=6666,
-            help='The port to receive data from dispatcher'
-    )
-    parser.add_argument(
-            '--jport',
-            type=int,
-            default=8888,
-            help='The port to send processed data'
+            '--config',
+            help='The Net Topology configuration file'
     )
     parser.add_argument(
             '--reducers',
@@ -38,5 +34,5 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    main(args.port, args.jport, args.reducers)
+    main(args.reducers, args.config)
 

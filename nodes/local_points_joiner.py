@@ -1,4 +1,5 @@
 import sys
+import json
 import argparse
 from os import path
 
@@ -6,9 +7,12 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from joiners.join import JoinCounter
 
-def main(port, workers):
+def main(workers, config):
 
-    joiner = JoinCounter(port, workers)
+    with open(config) as f:
+        config_data = join.load(f)
+
+    joiner = JoinCounter(workers, config_data)
 
     joiner.run()
 
@@ -20,10 +24,8 @@ if __name__ == '__main__':
                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
-            '--port',
-            type=int,
-            default=8888,
-            help='The port to connect to local points workers'
+            '--config',
+            help='The Net Topology configuration file'
     )
     parser.add_argument(
             '--workers',
@@ -34,4 +36,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    main(args.port, args.workers)
+    main(args.workers, args.config)

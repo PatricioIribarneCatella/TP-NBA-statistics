@@ -1,4 +1,5 @@
 import sys
+import json
 import argparse
 from os import path
 
@@ -6,9 +7,12 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from workers.local_points import LocalPointsWorker
 
-def main(wport, jport):
+def main(config):
 
-    worker = LocalPointsWorker(wport, jport)
+    with open(config) as f:
+        config_data = json.load(f)
+        
+    worker = LocalPointsWorker(config_data)
 
     worker.run()
 
@@ -19,18 +23,11 @@ if __name__ == '__main__':
                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
-            '--port',
-            type=int,
-            default=6666,
-            help='The port to receive data from dispatcher'
+            '--config',
+            help='The Net Topology configuration file'
     )
-    parser.add_argument(
-            '--jport',
-            type=int,
-            default=8888,
-            help='The port to send processed data'
-    )
+
     args = parser.parse_args()
 
-    main(args.port, args.jport)
+    main(args.config)
 

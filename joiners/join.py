@@ -10,7 +10,7 @@ from middleware.connection import GatherSocket
 #
 class JoinCounter(object):
 
-    def __init__(self, port, workers):
+    def __init__(self, workers, config_data):
         self.workers = workers
         self.socket = GatherSocket(port)
 

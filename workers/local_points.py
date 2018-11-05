@@ -10,7 +10,7 @@ import middleware.constants as const
 
 class LocalPointsWorker(object):
 
-    def __init__(self, wport, jport):
+    def __init__(self, config_data):
 
         self.socket = WorkerSocket(wport, jport)
         self.row_reducer = RowReducer(["shot_result", "points"])

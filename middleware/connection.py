@@ -6,14 +6,17 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 class ReplicationSocket(object):
 
-    def __init__(self, port):
+    def __init__(self, config):
 
         # Get the context and create the socket
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PUB)
 
         # Bind the 'publisher' socket
-        self.socket.bind("tcp://0.0.0.0:{}".format(port))
+        net_config = config["bind"]
+        self.socket.bind("tcp://{}:{}".format(
+                            net_config["ip"],
+                            net_config["port"]))
 
     def send(self, msg):
 
@@ -25,14 +28,17 @@ class ReplicationSocket(object):
 
 class SuscriberSocket(object):
 
-    def __init__(self, port, topicids):
+    def __init__(self, config, topicids):
 
         # Get the context and create the socket
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.SUB)
         
         # Connect to publisher
-        self.socket.connect("tcp://localhost:{}".format(port))
+        net_config = config["connect"]
+        self.socket.connect("tcp://{}:{}".format(
+                                net_config["ip"],
+                                net_config["port"]))
 
         # Set the suscriber topics
         for tid in topicids:
@@ -48,7 +54,7 @@ class SuscriberSocket(object):
 
 class PusherSocket(object):
 
-    def __init__(self, port):
+    def __init__(self):
         
         # Get the context and create the socket
         self.context = zmq.Context()
@@ -64,32 +70,41 @@ class PusherSocket(object):
 
 class DispatcherSocket(PusherSocket):
 
-    def __init__(self, port):
+    def __init__(self, config):
 
-        super(DispatcherSocket, self).__init__(port)
+        super(DispatcherSocket, self).__init__()
 
         # Bind the 'dispatcher'/'pusher' socket
-        self.socket.bind("tcp://0.0.0.0:{}".format(port))
+        net_config = config["bind"]
+        self.socket.bind("tcp://{}:{}".format(
+                            net_config["ip"],
+                            net_config["port"]))
 
 class ProducerSocket(PusherSocket):
 
-    def __init__(self, port):
+    def __init__(self, config):
         
-        super(ProducerSocket, self).__init__(port)
+        super(ProducerSocket, self).__init__()
 
         # Connect the 'dispatcher'/'pusher' socket
-        self.socket.connect("tcp://localhost:{}".format(port))
+        net_config = config["connect"]
+        self.socket.connect("tcp://{}:{}".format(
+                                net_config["ip"],
+                                net_config["port"]))
 
 class GatherSocket(object):
 
-    def __init__(self, port):
+    def __init__(self, config):
 
         # Get the context and create the socket
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PULL)
         
         # Bind the 'gather'/'puller' socket
-        self.socket.bind("tcp://0.0.0.0:{}".format(port))
+        net_config = config["bind"]
+        self.socket.bind("tcp://{}:{}".format(
+                            net_config["ip"],
+                            net_config["port"]))
 
     def recv(self):
 
@@ -101,14 +116,19 @@ class GatherSocket(object):
 
 class WorkerSocket(object):
 
-    def __init__(self, wport, jport):
+    def __init__(self, config):
 
         # Get the context and create sockets
         self.context = zmq.Context()
         
+        net_config = config["nodes"]
+
         # Channel to receive work
+        net_to_filter = net_config["filter-match-summary"]["connect"]
         self.work_socket = self.context.socket(zmq.PULL)
-        self.work_socket.connect("tcp://localhost:{}".format(wport))
+        self.work_socket.connect("tcp://{}:{}".format(
+                                    net_to_filter["ip"],
+                                    net_to_filter["port"]))
 
         # Channel to receive stop signal
         self.control_socket = self.context.socket(zmq.SUB)
@@ -116,8 +136,11 @@ class WorkerSocket(object):
         self.control_socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
         # Channel to send processed work
+        net_to_proxy = net_config["proxy-match-summary"]["connect"]
         self.join_socket = self.context.socket(zmq.PUSH)
-        self.join_socket.connect("tcp://localhost:{}".format(jport))
+        self.join_socket.connect("tcp://{}:{}".format(
+                                    net_to_proxy["ip"],
+                                    net_to_proxy["port"]))
         
         self.poll_sockets = {
             "work": self.work_socket,
@@ -155,3 +178,5 @@ class WorkerSocket(object):
         self.control_socket.close()
         self.join_socket.close()
         self.context.term()
+
+

@@ -8,9 +8,13 @@ import middleware.constants as const
 
 class MatchSummaryReducer(object):
 
-    def __init__(self, rid, reduce_port, join_port, workers):
-        self.reduce_socket = SuscriberSocket(reduce_port, [rid, const.END_DATA])
-        self.summary_socket = ProducerSocket(join_port)
+    def __init__(self, rid, workers, config):
+
+        reducer_to_proxy = config["reducer-match-summary"]["nodes"]["proxy-match-summary"]
+        reducer_to_summary = config["reducer-match-summary"]["nodes"]["match-summary"]
+
+        self.reduce_socket = SuscriberSocket(reducer_to_proxy, [rid])
+        self.summary_socket = ProducerSocket(reducer_to_summary)
         self.num_workers = workers
         
         # It stores (key, value) like this:

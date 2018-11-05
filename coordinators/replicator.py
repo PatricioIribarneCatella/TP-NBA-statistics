@@ -10,10 +10,10 @@ import middleware.constants as const
 
 class DataReplicator(object):
 
-    def __init__(self, data, pattern, port):
+    def __init__(self, data, pattern, config):
         self.data_path = data
         self.patterns = pattern.strip('[]').replace(' ', '_').split(',')
-        self.socket = ReplicationSocket(port)
+        self.socket = ReplicationSocket(config["main"])
 
     def _parse_data(self):
 

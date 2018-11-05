@@ -9,10 +9,10 @@ import middleware.constants as const
 
 class MatchSummaryWorker(object):
 
-    def __init__(self, wport, jport, reducers):
+    def __init__(self, reducers, config):
 
         self.num_reducers = reducers
-        self.socket = WorkerSocket(wport, jport)
+        self.socket = WorkerSocket(config["worker-match-summary"])
         self.home_row_expander = RowExpander("home_scored=Yes",
                                              "home_points",
                                              "points,0")
@@ -78,7 +78,7 @@ class MatchSummaryWorker(object):
 
     def run(self):
         
-        print("Match summary started")
+        print("Match summary worker started")
 
         quit = False
         end_data = False

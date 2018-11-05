@@ -10,10 +10,10 @@ from middleware.connection import GatherSocket
 #
 class MatchSummary(object):
 
-    def __init__(self, port, reducers):
+    def __init__(self, reducers, config):
 
         self.num_reducers = reducers
-        self.socket = GatherSocket(port)
+        self.socket = GatherSocket(config["match-summary"])
 
     def run(self):
 

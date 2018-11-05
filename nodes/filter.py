@@ -1,4 +1,5 @@
 import sys
+import json
 import argparse
 from os import path
 
@@ -6,9 +7,12 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from coordinators.filter_dispatcher import DataFilterReplicator
 
-def main(port, dport, pattern):
+def main(pattern, config):
 
-    replicator = DataFilterReplicator(port, dport, pattern)
+    with open(config) as f:
+        config_data = json.load(f)
+
+    replicator = DataFilterReplicator(pattern, config_data)
 
     replicator.run()
 
@@ -20,16 +24,8 @@ if __name__ == '__main__':
                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
-            '--port',
-            type=int,
-            default=5555,
-            help='The port to connect to replicator server'
-    )
-    parser.add_argument(
-            '--dport',
-            type=int,
-            default=6666,
-            help='The dispatcher port'
+            '--config',
+            help='The Net Topology configuration file'
     )
     parser.add_argument(
             '--pattern',
@@ -37,4 +33,4 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    main(args.port, args.dport, args.pattern)
+    main(args.pattern, args.config)

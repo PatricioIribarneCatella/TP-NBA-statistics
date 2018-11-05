@@ -1,4 +1,5 @@
 import sys
+import json
 import argparse
 from os import path
 
@@ -6,9 +7,12 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from coordinators.replicator import DataReplicator
 
-def main(data, pattern, port):
+def main(data, pattern, config):
 
-    replicator = DataReplicator(data, pattern, port)
+    with open(config) as f:
+        config_data = json.load(f)
+
+    replicator = DataReplicator(data, pattern, config_data)
 
     replicator.run()
 
@@ -27,10 +31,11 @@ if __name__ == '__main__':
             help='Match pattern for data fields'
     )
     parser.add_argument(
-            '--port',
-            type=int,
-            default=5555
+            '--config',
+            help='The Net Topology configuration file'
     )
+
     args = parser.parse_args()
 
-    main(args.data, args.pattern, args.port)
+    main(args.data, args.pattern, args.config)
+
