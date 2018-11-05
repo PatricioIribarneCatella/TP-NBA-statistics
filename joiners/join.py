@@ -8,7 +8,7 @@ from middleware.connection import GatherSocket
 #
 # format(msg) -> two_ok total_two three_ok total_three_points
 #
-class JoinCounter(object):
+class LocalPointsCounter(object):
 
     def __init__(self, workers, config):
         self.workers = workers
@@ -43,4 +43,13 @@ class JoinCounter(object):
         print("2 pts: {}%, 3 pts: {}%".format(2_points, 3_points))
 
         print("Join counter finished")
+
+class LocalTeamCounter(object):
+
+    def __init__(self, workers, config):
+        self.workers = workers
+        self.socket = GatherSocket(config["local-team"])
+
+    def run(self):
+
 

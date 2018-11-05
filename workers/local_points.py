@@ -6,7 +6,6 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from operations.rows import RowReducer
 from operations.counters import LocalPointsCounter
 from middleware.connection import WorkerSocket
-import middleware.constants as const
 
 class LocalPointsWorker(object):
 
