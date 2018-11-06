@@ -40,3 +40,29 @@ class LocalPointsCounter(object):
         }
 
 
+class LocalTeamCounter(object):
+
+    def __init__(self):
+        self.total_matches = 0
+        self.home_counter = 0
+
+    # Receives a list like:
+    #
+    # ["home_team_won=1/0"]
+    #
+    def count(self, row):
+    
+        home_team_won = row[0].split("=")[1]
+
+        self.total_matches += 1
+
+        if home_team_won:
+            self.home_counter += 1
+
+    def get_count(self):
+
+        return {
+            "total_matches": self.total_matches,
+            "home_count": self.home_counter
+        }
+

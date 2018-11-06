@@ -3,7 +3,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from operations.rows import RowExpander
+from operations.rows import RowMatchExpander
 from middleware.connection import WorkerSocket
 import middleware.constants as const
 
@@ -13,7 +13,7 @@ class MatchSummaryWorker(object):
 
         self.num_reducers = reducers
         self.socket = WorkerSocket(config["worker-match-summary"])
-        self.home_row_expander = RowExpander("home_scored=Yes",
+        self.home_row_expander = RowMatchExpander("home_scored=Yes",
                                              "home_points",
                                              "points,0")
 

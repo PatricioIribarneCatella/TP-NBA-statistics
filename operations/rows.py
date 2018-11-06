@@ -33,7 +33,7 @@ class RowReducer(object):
 #   field 'add_field' with the 
 #   second arg of 'from_field'
 #
-class RowExpander(object):
+class RowMatchExpander(object):
 
     def __init__(self, check_field, add_field, from_field):
         self.check_field = check_field
@@ -47,7 +47,7 @@ class RowExpander(object):
             if f == field:
                 return v
 
-    # It receives a list of "field=value"
+    # Receives a list of "field=value"
     def expand(self, row):
 
         fTrue, vFalse = self.from_field.split(',')
@@ -56,6 +56,33 @@ class RowExpander(object):
 
         if self.check_field in row:
             row.append(self.add_field + '=' + from_value)
+        else:
+            row.append(self.add_field + '=' + vFalse)
+
+        return row
+
+class RowCompareExpander(object):
+
+    def __init__(self, compare_fields, compare, add_field, from_value):
+        self.compare_fields = compare_fields
+        self.compare = compare
+        self.add_field = add_field
+        self.from_value = from_value
+
+    # Receives a list of "field=value"
+    def expand(self, row):
+
+        vTrue, vFalse = self.from_value.split(",")
+
+        right_field, left_field = self.compare_fields.split(",")
+
+        right_val = self._find_item(row, right_field)
+        left_val = self._find_item(row, left_field)
+
+        res = self.compare(int(right_val), int(left_val))
+
+        if res:
+            row.append(self.add_field + '=' + vTrue)
         else:
             row.append(self.add_field + '=' + vFalse)
 

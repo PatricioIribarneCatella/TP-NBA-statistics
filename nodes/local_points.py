@@ -5,7 +5,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from joiners.join import LocalPointsCounter
+from joiners.count import LocalPointsCounter
 
 def main(workers, config):
 
