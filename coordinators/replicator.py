@@ -1,19 +1,26 @@
 import sys
 import csv
 import glob
+import uuid
 from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import ReplicationSocket
+from middleware.connection import ReplicationSocket, GatherSocket
+from coordinators.stats import StatsManager
 import middleware.constants as const
 
 class DataReplicator(object):
 
-    def __init__(self, data, pattern, config):
+    def __init__(self, data, stats, pattern, config):
+        
         self.data_path = data
         self.patterns = pattern.strip('[]').replace(' ', '_').split(',')
+        self.stats_socket = GatherSocket(config["main"]["stats"])
         self.socket = ReplicationSocket(config["main"])
+        self.MAX_STATS = 4
+
+        self.stats_manager = StatsManager(stats)
 
     def _parse_data(self):
 
@@ -52,6 +59,30 @@ class DataReplicator(object):
         msg = "{data_id} {data_row}".format(data_id=const.NEW_DATA, data_row=row)
         self.socket.send(msg)
 
+    def _process_stat(self, msg):
+
+        if msg == "0 END_DATA":
+            return
+
+        # Split into the stat id and
+        # the data itself
+        mid, data = msg.split(" ", 1)
+
+        self.stats_manager.store(mid, data)
+
+    def _receive_statistics(self):
+
+        count = 0
+
+        while count < self.MAX_STATS:
+            
+            msg = self.stats_socket.recv()
+
+            self._process_stat(msg)
+
+            if msg == "0 END_DATA":
+                count += 1
+
     def run(self):
 
         # Wait for user to start
@@ -59,7 +90,9 @@ class DataReplicator(object):
         self._parse_data()
         
         self.socket.send("{data_id} END_DATA".format(data_id=const.END_DATA))
-        
+
+        self._receive_statistics()
+
         # Stats finished
         input('Enter to finish')
 

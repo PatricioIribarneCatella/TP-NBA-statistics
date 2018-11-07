@@ -3,6 +3,12 @@
 		"bind": {
 			"ip": "0.0.0.0",
 			"port": 4444
+		},
+		"stats": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 10001
+			}
 		}
 	},
 	"filter-match-summary": {
@@ -213,25 +219,52 @@
 				"ip": "0.0.0.0",
 				"port": 10000
 			}
+		},
+		"stats": {
+			"connect": {
+				"ip": "localhost",
+				"port": 10001
+			}
 		}
 	},
 	"topk": {
 		"bind": {
 			"ip": "0.0.0.0",
 			"port": 8885
+		},
+		"stats": {
+			"connect": {
+				"ip": "localhost",
+				"port": 10001
+			}
 		}
+
 	},
 	"local-points": {
 		"bind": {
 			"ip": "0.0.0.0",
 			"port": 9994
+		},
+		"stats": {
+			"connect": {
+				"ip": "localhost",
+				"port": 10001
+			}
 		}
+
 	},
 	"local-team": {
 		"bind": {
 			"ip": "0.0.0.0",
 			"port": 9998
+		},
+		"stats": {
+			"connect": {
+				"ip": "localhost",
+				"port": 10001
+			}
 		}
+
 	}
 }
 

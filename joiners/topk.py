@@ -3,16 +3,19 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import GatherSocket
+from middleware.connection import GatherSocket, ProducerSocket
+import middleware.constants as const
 
 class Topk(object):
 
     def __init__(self, reducers, k_number, config):
 
-        self.num_reducers = reducers
         self.socket = GatherSocket(config["topk"])
-        self.data = {}
+        self.stats_socket = ProducerSocket(config["topk"]["stats"])
+ 
         self.topk_number = k_number
+        self.num_reducers = reducers
+        self.data = {}
 
     def _process_data(self, msg):
 
@@ -29,6 +32,8 @@ class Topk(object):
         s = s[:self.topk_number]
 
         for player_info in s:
+            self.stats_socket.send("{} {} {}".format(
+                    const.TOPK_STAT, player_info[0], player_info[1]))
             print("{}, {}".format(player_info[0], player_info[1]))
 
     def run(self):
