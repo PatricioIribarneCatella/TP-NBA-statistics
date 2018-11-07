@@ -15,6 +15,7 @@ class MatchSummary(object):
         self.num_reducers = reducers
         self.socket = GatherSocket(config["match-summary"]["in"])
         self.dispatch_socket = DispatcherSocket(config["match-summary"]["out"])
+        self.signal_socket = ReplicationSocket(config["match-summary"]["signal"])
 
     def run(self):
 
@@ -32,7 +33,12 @@ class MatchSummary(object):
                 self.dispatch_socket.send(msg)
                 print(msg)
 
+        # Send signal to all the workers
+        send.signal_socket.send("0 END_DATA")
+
         self.socket.close()
+        self.dispatch_socket.close()
+        self.signal_socket.close()
 
         print("Match summary finished")
 
