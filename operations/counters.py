@@ -56,8 +56,7 @@ class LocalTeamCounter(object):
 
         self.total_matches += 1
 
-        if home_team_won:
-            self.home_counter += 1
+        self.home_counter += int(home_team_won)
 
     def get_count(self):
 

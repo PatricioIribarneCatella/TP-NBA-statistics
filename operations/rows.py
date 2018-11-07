@@ -68,18 +68,24 @@ class RowCompareExpander(object):
         self.compare = compare
         self.add_field = add_field
         self.from_value = from_value
+    
+    def _find_item(self, row, field):
+
+        for item in row:
+            f, v = item.split('=')
+            if f == field:
+                return v
 
     # Receives a list of "field=value"
     def expand(self, row):
 
         vTrue, vFalse = self.from_value.split(",")
-
-        right_field, left_field = self.compare_fields.split(",")
+        left_field, right_field = self.compare_fields.split(",")
 
         right_val = self._find_item(row, right_field)
         left_val = self._find_item(row, left_field)
 
-        res = self.compare(int(right_val), int(left_val))
+        res = self.compare(int(left_val), int(right_val))
 
         if res:
             row.append(self.add_field + '=' + vTrue)

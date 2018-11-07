@@ -8,7 +8,7 @@ from operations.counters import LocalTeamCounter
 from middleware.connection import WorkerSocket
 
 #
-# format(msg) -> home_team home_points away_points away_team
+# format(msg) -> home_team home_points away_points away_team, date
 #
 class LocalTeamWorker(object):
 
@@ -26,7 +26,7 @@ class LocalTeamWorker(object):
 
     def _process_data(self, msg):
 
-        home_team, home_points, away_points, away_team = msg.split(" ")
+        home_team, home_points, away_points, away_team, date = msg.split(" ")
 
         row = ["home_points=" + home_points, "away_points=" + away_points]
 

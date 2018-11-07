@@ -3,7 +3,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import GatherSocket, DispatcherSocket
+from middleware.connection import GatherSocket, DispatcherSocket, ReplicationSocket
 
 #
 # format(msg) -> home_team home_points away_points away_team
@@ -34,7 +34,7 @@ class MatchSummary(object):
                 print(msg)
 
         # Send signal to all the workers
-        send.signal_socket.send("0 END_DATA")
+        self.signal_socket.send("0 END_DATA")
 
         self.socket.close()
         self.dispatch_socket.close()

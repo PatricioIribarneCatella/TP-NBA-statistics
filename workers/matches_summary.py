@@ -17,7 +17,7 @@ class MatchSummaryWorker(object):
                                              "home_points",
                                              "points,0")
 
-        self.away_row_expander = RowExpander("home_scored=No",
+        self.away_row_expander = RowMatchExpander("home_scored=No",
                                              "away_points",
                                              "points,0")
 

@@ -37,10 +37,10 @@ class LocalPointsCounter(object):
 
             i += 1
 
-        2_points = round(two_ok/total_two_points, 4) * 100
-        3_points = round(three_ok/total_three_points, 4) * 100 
+        two_pts = round(two_ok/total_two_points, 4) * 100
+        three_pts = round(three_ok/total_three_points, 4) * 100 
 
-        print("2 pts: {}%, 3 pts: {}%".format(2_points, 3_points))
+        print("2 pts: {}%, 3 pts: {}%".format(two_pts, three_pts))
 
         print("Local Points counter finished")
 
