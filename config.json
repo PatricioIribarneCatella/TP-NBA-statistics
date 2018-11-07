@@ -1,0 +1,238 @@
+{
+	"main": {
+		"bind": {
+			"ip": "0.0.0.0",
+			"port": 4444
+		}
+	},
+	"filter-match-summary": {
+		"connect": {
+			"ip": "localhost",
+			"port": 4444
+		},
+		"bind": {
+			"ip": "0.0.0.0",
+			"port": 5554
+		},
+		"signal": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 7777
+			}
+		}
+	},
+	"filter-topk": {
+		"connect": {
+			"ip": "localhost",
+			"port": 4444
+		},
+		"bind": {
+			"ip": "0.0.0.0",
+			"port": 5555
+		},
+		"signal": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 8888
+			}
+		}
+
+	},
+	"filter-local-points": {
+		"connect": {
+			"ip": "localhost",
+			"port": 4444
+		},
+		"bind":{
+			"ip": "0.0.0.0",
+			"port": 5556
+		},
+		"signal": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 9999
+			}
+		}
+
+	},
+	"worker-match-summary": {
+		"nodes": {
+			"filter": {
+				"connect": {
+					"ip": "localhost",
+					"port": 5554
+				}
+			},
+			"proxy": {
+				"connect": {
+					"ip": "localhost",
+					"port": 6664
+				}
+			},
+			"signal": {
+				"connect": {
+					"ip": "localhost",
+					"port": 7777
+				}
+			}
+		}
+	},
+	"worker-topk": {
+		"nodes": {
+			"filter": {
+				"connect": {
+					"ip": "localhost",
+					"port": 5555
+				}
+			},
+			"proxy": {
+				"connect": {
+					"ip": "localhost",
+					"port": 6665
+				}
+			},
+			"signal": {
+				"connect": {
+					"ip": "localhost",
+					"port": 8888
+				}
+			}
+		}
+	},
+	"worker-local-points": {
+		"nodes": {
+			"filter": {
+				"connect": {
+					"ip": "localhost",
+					"port": 5556
+				}
+			},
+			"proxy": {
+				"connect": {
+					"ip": "localhost",
+					"port": 9994
+				}
+			},
+			"signal": {
+				"connect": {
+					"ip": "localhost",
+					"port": 9999
+				}
+			}
+		}
+	},
+	"worker-local-team": {
+		"nodes": {
+			"filter": {
+				"connect": {
+					"ip": "localhost",
+					"port": 9995
+				}
+			},
+			"proxy": {
+				"connect": {
+					"ip": "localhost",
+					"port": 9998
+				}
+			},
+			"signal": {
+				"connect": {
+					"ip": "localhost",
+					"port": 10000
+				}
+			}
+		}
+	},
+	"proxy-match-summary": {
+		"in": {
+			"ip": "0.0.0.0",
+			"port": 6664
+		},
+		"out": {
+			"ip": "0.0.0.0",
+			"port": 7774
+		}
+	},
+	"proxy-topk": {
+		"in": {
+			"ip": "0.0.0.0",
+			"port": 6665
+		},
+		"out": {
+			"ip": "0.0.0.0",
+			"port": 7775
+		}
+	},
+	"reducer-match-summary": {
+		"nodes": {
+			"proxy": {
+				"connect": {
+					"ip": "localhost",
+					"port": 7774
+				}
+			},
+			"joiner": {
+				"connect": {
+					"ip": "localhost",
+					"port": 8884
+				}
+			}
+		}
+	},
+	"reducer-topk": {
+		"nodes": {
+			"proxy": {
+				"connect": {
+					"ip": "localhost",
+					"port": 7775
+				}
+			},
+			"joiner": {
+				"connect": {
+					"ip": "localhost",
+					"port": 8885
+				}
+			}
+		}
+	},
+	"match-summary": {
+		"in": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 8884
+			}
+		},
+		"out": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 9995
+			}
+		},
+		"signal": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 10000
+			}
+		}
+	},
+	"topk": {
+		"bind": {
+			"ip": "0.0.0.0",
+			"port": 8885
+		}
+	},
+	"local-points": {
+		"bind": {
+			"ip": "0.0.0.0",
+			"port": 9994
+		}
+	},
+	"local-team": {
+		"bind": {
+			"ip": "0.0.0.0",
+			"port": 9998
+		}
+	}
+}
+
+
