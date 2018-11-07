@@ -5,14 +5,14 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from joiners.join import JoinCounter
+from joiners.count import LocalPointsCounter
 
 def main(workers, config):
 
     with open(config) as f:
         config_data = json.load(f)
 
-    joiner = JoinCounter(workers, config_data)
+    joiner = LocalPointsCounter(workers, config_data)
 
     joiner.run()
 
@@ -20,7 +20,7 @@ def main(workers, config):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-                    description='Scored Filter NBA',
+                    description='Local points NBA',
                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
@@ -37,3 +37,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     main(args.workers, args.config)
+
+
