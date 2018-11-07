@@ -4,38 +4,20 @@ from os import path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from middleware.connection import SuscriberSocket, ProducerSocket
+from reducers.reducer import Reducer
 
-class MatchSummaryReducer(object):
+class MatchSummaryReducer(Reducer):
 
     def __init__(self, rid, workers, config):
 
-        reducer_to_proxy = config["reducer-match-summary"]["nodes"]["proxy"]
-        reducer_to_summary = config["reducer-match-summary"]["nodes"]["joiner"]
-
-        self.reduce_socket = SuscriberSocket(reducer_to_proxy, [rid])
-        self.summary_socket = ProducerSocket(reducer_to_summary)
-
-        self.num_workers = workers
+        super(MatchSummaryReducer, self).__init__(rid,
+                                workers, "reducer-match-summary", config)
         
         # It stores (key, value) like this:
-        #   - key=("home_team"(str), "away_team"(str), "date"(date))
-        #   - value=[home_points(int), away_points(int)]
-        self.data = {}
+            #   - key=("home_team"(str), "away_team"(str), "date"(date))
+            #   - value=[home_points(int), away_points(int)]
 
-    def _recv_data(self):
-
-        msg = self.reduce_socket.recv()
-
-        msgid, data = msg.split(" ", 1)
-
-        if (data == "END_DATA"):
-            return msgid, data
-
-        data = data.split("\n")
-
-        # To take out the last item that it´s
-        # an empty string
-        data.pop()
+    def _parse_data(self, data):
 
         home_points = int(data[3].split("=")[1])
         away_points = int(data[4].split("=")[1])
@@ -72,32 +54,8 @@ class MatchSummaryReducer(object):
                                        away_team,
                                        date)
 
-            self.summary_socket.send(msg)
-
-        # Send 'end' message
-        self.summary_socket.send("END_DATA")
+            self.joiner_socket.send(msg)
 
     def run(self):
 
-        print("Match summary reducer started")
-
-        quit = False
-        end_data_counter = 0
-
-        while not quit:
-
-            key, data = self._recv_data()
-
-            if (data == "END_DATA"):
-                end_data_counter += 1
-                if end_data_counter == self.num_workers:
-                    quit = True
-                    continue
-
-            self._process_data(key, data)
-
-        self._send_data()
-
-        print("Match summary reducer finished")
-
-
+        super(MatchSummaryReducer, self).run("Match summary")

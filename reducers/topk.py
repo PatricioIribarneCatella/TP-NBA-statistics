@@ -1,43 +1,25 @@
 import sys
 from os import path
 
-
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from middleware.connection import SuscriberSocket, ProducerSocket
+from reducers.reducer import Reducer
 
-class TopkReducer(object):
+class TopkReducer(Reducer):
 
     def __init__(self, rid, workers, k_number, config):
 
-        reducer_to_proxy = config["reducer-topk"]["nodes"]["proxy"]
-        reducer_to_joiner = config["reducer-topk"]["nodes"]["joiner"]
+        super(TopkReducer, self).__init__(rid, workers,
+                                "reducer-topk", config)
 
-        self.reduce_socket = SuscriberSocket(reducer_to_proxy, [rid])
-        self.joiner_socket = ProducerSocket(reducer_to_joiner)
-
-        self.num_workers = workers
-
+        self.topk_number = k_number
+        
         # It stores (key, value) like this:
         # - key="player"(str)
         # - value=points(int)
-        self.data = {}
-        self.topk_number = k_number
 
-    def _recv_data(self):
-
-        msg = self.reduce_socket.recv()
-
-        msgid, data = msg.split(" ", 1)
-
-        if (data == "END_DATA"):
-            return msgid, data
-
-        data = data.split("\n")
-
-        # Take out the last item
-        # that it´s an empty string
-        data.pop()
+    def _parse_data(self, data):
 
         player = data[0].split("=")[1]
         points = int(data[1].split("=")[1])
@@ -72,29 +54,6 @@ class TopkReducer(object):
 
             self.joiner_socket.send(msg)
 
-        # Send 'end' message
-        self.joiner_socket.send("END_DATA")
-
     def run(self):
 
-        print("Top K reducer started")
-
-        quit = False
-        end_data_counter = 0
-
-        while not quit:
-
-            key, data = self._recv_data()
-
-            if (data == "END_DATA"):
-                end_data_counter += 1
-                if (end_data_counter == self.num_workers):
-                    quit = True
-                    continue
-
-            self._process_data(key, data)
-
-        self._send_data()
-
-        print("Top K reducer finished")
-
+        super(TopkReducer, self).run("Top K")
