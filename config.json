@@ -121,6 +121,28 @@
 			}
 		}
 	},
+	"worker-local-team": {
+		"nodes": {
+			"filter": {
+				"connect": {
+					"ip": "localhost",
+					"port": 9995
+				}
+			},
+			"proxy": {
+				"connect": {
+					"ip": "localhost",
+					"port": 9998
+				}
+			},
+			"signal": {
+				"connect": {
+					"ip": "localhost",
+					"port": 10000
+				}
+			}
+		}
+	},
 	"proxy-match-summary": {
 		"in": {
 			"ip": "0.0.0.0",
@@ -185,6 +207,12 @@
 				"ip": "0.0.0.0",
 				"port": 9995
 			}
+		},
+		"signal": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 10000
+			}
 		}
 	},
 	"topk": {
@@ -197,6 +225,12 @@
 		"bind": {
 			"ip": "0.0.0.0",
 			"port": 9994
+		}
+	},
+	"local-team": {
+		"bind": {
+			"ip": "0.0.0.0",
+			"port": 9998
 		}
 	}
 }
