@@ -4,15 +4,16 @@ from os import path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from operations.rows import RowReducer
-from middleware.connection import WorkerSocket
-import middleware.constants as const
+from workers.worker import Worker
 
-class TopkWorker(object):
+class TopkWorker(Worker):
 
     def __init__(self, reducers, config):
 
+        super(TopkWorker, self).__init__(
+                        "worker-topk", config)
+
         self.num_reducers = reducers
-        self.socket = WorkerSocket(config["worker-topk"])
         self.row_reducer = RowReducer(["player", "points"])
 
     def _parse_data(self, msg):
@@ -58,37 +59,15 @@ class TopkWorker(object):
 
        msg = self._encode_data(msg)
 
-       return msg
+       self.socket.send("join", msg)
 
-    def run(self):
-
-        print("Top K worker started")
-
-        quit = False
-        end_data = False
-
-        while not quit:
-
-            socks = self.socket.poll()
-
-            # Message come from dispatcher
-            if self.socket.test(socks, "work"):
-                work_msg = self.socket.recv(socks, "work")
-                work_msg = self._process_data(work_msg)
-                self.socket.send("join", work_msg)
-            elif end_data:
-                quit = True
-
-            # Message come from dispatcher to end
-            if self.socket.test(socks, "control"):
-                control_msg = self.socket.recv(socks, "control")
-                if control_msg == "0 END_DATA":
-                    end_data = True
+    def _send_end_signal(self):
 
         # Send 'finish' message to all the reducers
         for r in range(1, self.num_reducers + 1):
             self.socket.send("join", "{rid} END_DATA".format(rid=r))
 
-        print("Top K worker finished")
+    def run(self):
 
+        super(TopkWorker, self).run("Top K")
 

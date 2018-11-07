@@ -4,15 +4,16 @@ from os import path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from operations.rows import RowMatchExpander
-from middleware.connection import WorkerSocket
-import middleware.constants as const
+from workers.worker import Worker
 
-class MatchSummaryWorker(object):
+class MatchSummaryWorker(Worker):
 
     def __init__(self, reducers, config):
 
+        super(MatchSummaryWorker, self).__init__(
+                        "worker-match-summary", config)
+
         self.num_reducers = reducers
-        self.socket = WorkerSocket(config["worker-match-summary"])
         self.home_row_expander = RowMatchExpander("home_scored=Yes",
                                              "home_points",
                                              "points,0")
@@ -74,37 +75,15 @@ class MatchSummaryWorker(object):
 
         msg = self._encode_data(msg)
 
-        return msg
+        self.socket.send("join", msg)
 
-    def run(self):
+    def _send_end_signal(self):
         
-        print("Match summary worker started")
-
-        quit = False
-        end_data = False
-
-        while not quit:
-
-            socks = self.socket.poll()
-
-            # Message come from dispatcher
-            if self.socket.test(socks, "work"):
-                work_msg = self.socket.recv(socks, "work")
-                work_msg = self._process_data(work_msg)
-                self.socket.send("join", work_msg)
-            elif end_data:
-                quit = True
-
-            # Message come from dispatcher to end
-            if self.socket.test(socks, "control"):
-                control_msg = self.socket.recv(socks, "control")
-                if control_msg == "0 END_DATA":
-                    end_data = True
-
         # Send 'finish' message to all the reducers
         for r in range(1, self.num_reducers + 1):
             self.socket.send("join", "{rid} END_DATA".format(rid=r))
 
-        print("Match summary worker finished")
-
+    def run(self):
+       
+        super(MatchSummaryWorker, self).run("Match summary")
 

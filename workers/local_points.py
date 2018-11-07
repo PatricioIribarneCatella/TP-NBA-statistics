@@ -5,13 +5,15 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from operations.rows import RowReducer
 from operations.counters import LocalPointsCounter
-from middleware.connection import WorkerSocket
+from workers.worker import Worker
 
-class LocalPointsWorker(object):
+class LocalPointsWorker(Worker):
 
     def __init__(self, config):
 
-        self.socket = WorkerSocket(config["worker-local-points"])
+        super(LocalPointsWorker, self).__init__(
+                    "worker-local-points", config)
+
         self.row_reducer = RowReducer(["shot_result", "points"])
         self.counter = LocalPointsCounter()
 
@@ -32,41 +34,22 @@ class LocalPointsWorker(object):
         row = self._parse_data(row)
 
         row = self.row_reducer.reduce(row)
+        
         self.counter.count(row)
 
-    def run(self):
+    def _send_end_signal(self):
 
-        print("Local points worker started")
-
-        quit = False
-        end_data = False
-
-        while not quit:
-            
-            socks = self.socket.poll()
-
-            # Message come from the dispatcher
-            if self.socket.test(socks, "work"):
-                work_msg = self.socket.recv(socks, "work")
-                self._process_data(work_msg)
-            elif end_data:
-                quit = True
-
-            # Message come from dispatcher to end
-            if self.socket.test(socks, "control"):
-                control_msg = self.socket.recv(socks, "control")
-                if control_msg == "0 END_DATA":
-                    end_data = True
-
-        # Send result to 'Joiner'
         count = self.counter.get_count()
 
+        # Send result to 'Joiner'
         self.socket.send("join", "{} {} {} {}".format(
                                 count["two_ok"],
                                 count["total_two"],
                                 count["three_ok"],
                                 count["total_three"]))
-        
-        print("Local points finished")
+
+    def run(self):
+
+        super(LocalPointsWorker, self).run("Local points")
 
 
