@@ -7,12 +7,12 @@ from middleware.connection import GatherSocket
 
 class Topk(object):
 
-    def __init__(self, reducers, config):
+    def __init__(self, reducers, k_number, config):
 
         self.num_reducers = reducers
         self.socket = GatherSocket(config["topk"])
         self.data = {}
-        self.topk_number = 10
+        self.topk_number = k_number
 
     def _process_data(self, msg):
 

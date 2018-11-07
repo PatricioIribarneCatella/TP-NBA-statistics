@@ -8,7 +8,7 @@ from middleware.connection import SuscriberSocket, ProducerSocket
 
 class TopkReducer(object):
 
-    def __init__(self, rid, workers, config):
+    def __init__(self, rid, workers, k_number, config):
 
         reducer_to_proxy = config["reducer-topk"]["nodes"]["proxy"]
         reducer_to_joiner = config["reducer-topk"]["nodes"]["joiner"]
@@ -16,14 +16,13 @@ class TopkReducer(object):
         self.reduce_socket = SuscriberSocket(reducer_to_proxy, [rid])
         self.joiner_socket = ProducerSocket(reducer_to_joiner)
 
-        self.rid = rid
         self.num_workers = workers
 
         # It stores (key, value) like this:
         # - key="player"(str)
         # - value=points(int)
         self.data = {}
-        self.topk_number = 10
+        self.topk_number = k_number
 
     def _recv_data(self):
 
@@ -98,3 +97,4 @@ class TopkReducer(object):
         self._send_data()
 
         print("Top K reducer finished")
+

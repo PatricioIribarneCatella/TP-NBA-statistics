@@ -14,6 +14,7 @@ class MatchSummaryReducer(object):
 
         self.reduce_socket = SuscriberSocket(reducer_to_proxy, [rid])
         self.summary_socket = ProducerSocket(reducer_to_summary)
+
         self.num_workers = workers
         
         # It stores (key, value) like this:
