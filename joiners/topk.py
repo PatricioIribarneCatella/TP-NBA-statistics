@@ -36,6 +36,8 @@ class Topk(object):
                     const.TOPK_STAT, player_info[0], player_info[1]))
             print("{}, {}".format(player_info[0], player_info[1]))
 
+        self.stats_socket.send("0 END_DATA")
+
     def run(self):
 
         print("Top K started")
@@ -51,10 +53,10 @@ class Topk(object):
             else:
                 self._process_data(msg)
 
-        self.socket.close()
-
         self._calculate_topk()
 
+        self.socket.close()
+        
         print("Top K finished")
 
 

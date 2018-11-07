@@ -7,12 +7,17 @@
 ###############################
 ## Run 'Match Summary' nodes ##
 ###############################
+
 python3 nodes/match_summary_filter.py --config="config.json" &
-python3 nodes/match_summary_worker.py --config="config.json" --reducers=3 &
+
+for wid in {1..${MATCH_WORKERS}}; do
+	python3 nodes/match_summary_worker.py --config="config.json" --reducers=${MATCH_REDUCERS} &
+done
+
 python3 nodes/match_summary_proxy.py --config="config.json" &
 
-for id in {1..3}; do
-	python3 nodes/match_summary_reducer.py --workers=1 --rid=$id --config="config.json" &
+for id in {1..${MATCH_REDUCERS}}; do
+	python3 nodes/match_summary_reducer.py --workers=${MATCH_WORKERS} --rid=$id --config="config.json" &
 done
 
 python3 nodes/match_summary.py --reducers=3 --config="config.json" &

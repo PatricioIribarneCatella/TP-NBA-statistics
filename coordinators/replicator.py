@@ -1,7 +1,6 @@
 import sys
 import csv
 import glob
-import uuid
 from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
@@ -12,13 +11,13 @@ import middleware.constants as const
 
 class DataReplicator(object):
 
-    def __init__(self, data, stats, pattern, config):
+    def __init__(self, data, stats, pattern, num_of_stats, config):
         
         self.data_path = data
         self.patterns = pattern.strip('[]').replace(' ', '_').split(',')
         self.stats_socket = GatherSocket(config["main"]["stats"])
         self.socket = ReplicationSocket(config["main"])
-        self.MAX_STATS = 4
+        self.num_of_stats = num_of_stats
 
         self.stats_manager = StatsManager(stats)
 
@@ -74,7 +73,7 @@ class DataReplicator(object):
 
         count = 0
 
-        while count < self.MAX_STATS:
+        while count < self.num_of_stats:
             
             msg = self.stats_socket.recv()
 

@@ -45,6 +45,9 @@ class LocalPointsCounter(object):
         self.stats_socket.send("{} 2 pts: {}%, 3 pts: {}%".format(
                 const.LOCAL_POINTS_STAT, two_pts, three_pts))
 
+        # Send signal to stat node
+        self.stats_socket.send("0 END_DATA")
+
         print("2 pts: {}%, 3 pts: {}%".format(two_pts, three_pts))
         print("Local Points counter finished")
 
@@ -82,6 +85,9 @@ class LocalTeamCounter(object):
         self.stats_socket.send("{} local team: {}%".format(
             const.LOCAL_TEAM_STAT, local_team))
         
+        # Send signal to stat node
+        self.stats_socket.send("0 END_DATA")
+       
         print("local team: {}%".format(local_team))
         print("Local Team counter finished")
 

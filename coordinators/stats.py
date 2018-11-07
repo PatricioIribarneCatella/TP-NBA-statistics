@@ -6,7 +6,7 @@ class StatsManager(object):
     def __init__(self, stats_path):
 
         self.stats_path = stats_path
-        self.stats_id = uuid.uuid4()
+        self.stats_id = str(uuid.uuid4())
 
         self.topk_fname = "topk_"
         self.summary_fname = "mathes_summary_"

@@ -3,9 +3,8 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import GatherSocket,
-            DispatcherSocket, ReplicationSocket,
-            ProducerSocket
+from middleware.connection import GatherSocket, DispatcherSocket
+from middleware.connection import ReplicationSocket, ProducerSocket
 
 import middleware.constants as const
 
@@ -42,6 +41,9 @@ class MatchSummary(object):
 
         # Send signal to all the workers
         self.signal_socket.send("0 END_DATA")
+
+        # Send signal to stat node
+        self.stat_socket.send("0 END_DATA")
 
         self.socket.close()
         self.dispatch_socket.close()
