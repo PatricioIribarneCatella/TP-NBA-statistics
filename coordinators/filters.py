@@ -63,8 +63,7 @@ class FilterReplicator(object):
         
         for it in items:
             msg += it[0] + '=' + it[1] + '\n'
-
-        print(msg)
+        
         self.dispatchsocket.send(msg)
 
     def run(self):
