@@ -13,69 +13,71 @@ def generate(summary_workers,
              local_team_workers,
              local_points_workers):
 
-    print("#!/bin/bash")
+    with open("run-server.sh", "w+") as f:
+        
+        f.write("#!/bin/bash\n")
 
-    print("#############")
-    print("# Run nodes #")
-    print("#############")
+        f.write("#############\n")
+        f.write("# Run nodes #\n")
+        f.write("#############\n")
 
-    print("###############################")
-    print("## Run 'Match Summary' nodes ##")
-    print("###############################")
+        f.write("###############################\n")
+        f.write("## Run 'Match Summary' nodes ##\n")
+        f.write("###############################\n")
 
-    print("python3 nodes/match_summary_filter.py --config=config.json &")
+        f.write("python3 nodes/match_summary_filter.py --config=config.json &\n")
 
-    print("for wid in {1.." + str(summary_workers) + "}; do")
-    print("     python3 nodes/match_summary_worker.py --config=config.json --reducers={} &".format(summary_reducers))
-    print("done")
+        f.write("for wid in {1.." + str(summary_workers) + "}; do\n")
+        f.write("     python3 nodes/match_summary_worker.py --config=config.json --reducers={} &\n".format(summary_reducers))
+        f.write("done\n")
 
-    print("python3 nodes/match_summary_proxy.py --config=config.json &")
+        f.write("python3 nodes/match_summary_proxy.py --config=config.json &\n")
 
-    print("for id in {1.." + str(summary_reducers) + "}; do")
-    print("     python3 nodes/match_summary_reducer.py --workers={} --rid=$id --config=config.json &".format(summary_workers))
-    print("done")
+        f.write("for id in {1.." + str(summary_reducers) + "}; do\n")
+        f.write("     python3 nodes/match_summary_reducer.py --workers={} --rid=$id --config=config.json &\n".format(summary_workers))
+        f.write("done\n")
 
-    print("python3 nodes/match_summary.py --reducers={} --config=config.json &".format(summary_reducers))
+        f.write("python3 nodes/match_summary.py --reducers={} --config=config.json &\n".format(summary_reducers))
 
-    print("################################")
-    print("## Run 'Local Team Won' nodes ##")
-    print("################################")
+        f.write("################################\n")
+        f.write("## Run 'Local Team Won' nodes ##\n")
+        f.write("################################\n")
 
-    print("for id in {1.." + str(local_team_workers) + "}; do")
-    print("     python3 nodes/local_team_worker.py --config=config.json &")
-    print("done")
+        f.write("for id in {1.." + str(local_team_workers) + "}; do\n")
+        f.write("     python3 nodes/local_team_worker.py --config=config.json &\n")
+        f.write("done\n")
 
-    print("python3 nodes/local_team.py --config=config.json --workers={} &".format(local_team_workers))
+        f.write("python3 nodes/local_team.py --config=config.json --workers={} &\n".format(local_team_workers))
 
-    print("##############################")
-    print("## Run 'Local Points' nodes ##")
-    print("##############################")
+        f.write("##############################\n")
+        f.write("## Run 'Local Points' nodes ##\n")
+        f.write("##############################\n")
 
-    print("python3 nodes/local_points_filter.py --config=config.json &")
+        f.write("python3 nodes/local_points_filter.py --config=config.json &\n")
 
-    print("for id in {1.." + str(local_points_workers) + "}; do")
-    print("     python3 nodes/local_points_worker.py --config=config.json &")
-    print("done")
+        f.write("for id in {1.." + str(local_points_workers) + "}; do\n")
+        f.write("     python3 nodes/local_points_worker.py --config=config.json &\n")
+        f.write("done")
 
-    print("python3 nodes/local_points.py --config=config.json --workers={} &".format(local_points_workers))
+        f.write("python3 nodes/local_points.py --config=config.json --workers={} &\n".format(local_points_workers))
 
-    print("#######################")
-    print("## Run 'Top K' nodes ##")
-    print("#######################")
+        f.write("#######################\n")
+        f.write("## Run 'Top K' nodes ##\n")
+        f.write("#######################\n")
 
-    print("python3 nodes/topk_filter.py --config=config.json &")
-    
-    print("for wid in {1.." + str(topk_workers) + "}; do")
-    print("     python3 nodes/topk_worker.py --config=config.json --reducers={} &".format(topk_reducers))
-    print("done")
+        f.write("python3 nodes/topk_filter.py --config=config.json &\n")
+        
+        f.write("for wid in {1.." + str(topk_workers) + "}; do\n")
+        f.write("     python3 nodes/topk_worker.py --config=config.json --reducers={} &\n".format(topk_reducers))
+        f.write("done\n")
 
-    print("python3 nodes/topk_proxy.py --config=config.json &")
+        f.write("python3 nodes/topk_proxy.py --config=config.json &\n")
 
-    print("for id in {1.." + str(topk_reducers) + "}; do")
-    print("     python3 nodes/topk_reducer.py --workers={} --rid=$id --config=config.json &".format(topk_workers))
-    print("done")
+        f.write("for id in {1.." + str(topk_reducers) + "}; do\n")
+        f.write("     python3 nodes/topk_reducer.py --workers={} --rid=$id --config=config.json &\n".format(topk_workers))
+        f.write("done\n")
 
-    print("python3 nodes/topk.py --reducers={} --config=config.json &".format(topk_reducers))
+        f.write("python3 nodes/topk.py --reducers={} --config=config.json &\n".format(topk_reducers))
 
 
 if __name__ == "__main__":

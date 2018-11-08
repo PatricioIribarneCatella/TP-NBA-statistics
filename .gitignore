@@ -105,3 +105,4 @@ venv.bak/
 
 # stats dir
 stats/
+run-server.sh
