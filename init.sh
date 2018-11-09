@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Virtualenv setup and PyZmq installation
 
 virtualenv venv
