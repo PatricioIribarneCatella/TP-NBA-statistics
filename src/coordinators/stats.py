@@ -6,6 +6,9 @@ class StatsManager(object):
     def __init__(self, stats_path):
 
         self.stats_path = stats_path
+
+        # Generates a unique key to
+        # identify this stats
         self.stats_id = str(uuid.uuid4())
 
         self.topk_fname = "topk_"

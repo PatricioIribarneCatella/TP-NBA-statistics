@@ -13,6 +13,7 @@ class Topk(object):
 
         self.socket = GatherSocket(config["topk"])
         self.stats_socket = ProducerSocket(config["topk"]["stats"])
+        self.signal_proxy_socket = ProducerSocket(config["topk"]["signal-proxy"])
  
         self.topk_number = k_number
         self.num_reducers = reducers
@@ -56,7 +57,11 @@ class Topk(object):
 
         self._calculate_topk()
 
+        # Send signal to proxy
+        self.signal_proxy_socket.send("END_DATA")
+
         self.socket.close()
+        self.signal_proxy_socket.close()
         
         print("Top K finished")
 

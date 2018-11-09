@@ -24,7 +24,6 @@ class ReplicationSocket(object):
 
     def close(self):
         self.socket.close()
-        self.context.term()
 
 class SuscriberSocket(object):
 
@@ -50,7 +49,6 @@ class SuscriberSocket(object):
     
     def close(self):
         self.socket.close()
-        self.context.term()
 
 class PusherSocket(object):
 
@@ -66,7 +64,6 @@ class PusherSocket(object):
 
     def close(self):
         self.socket.close()
-        self.context.term()
 
 class DispatcherSocket(PusherSocket):
 
@@ -112,7 +109,6 @@ class GatherSocket(object):
 
     def close(self):
         self.socket.close()
-        self.context.term()
 
 class WorkerSocket(object):
 
@@ -180,6 +176,5 @@ class WorkerSocket(object):
         self.work_socket.close()
         self.control_socket.close()
         self.join_socket.close()
-        self.context.term()
 
 

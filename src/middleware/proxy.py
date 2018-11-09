@@ -6,6 +6,7 @@ class Proxy(object):
 
         in_config = config[node]["in"]
         out_config = config[node]["out"]
+        signal_config = config[node]["signal"]
 
         # Get the context and create the sockets
         self.context = zmq.Context()
@@ -20,19 +21,45 @@ class Proxy(object):
                                 out_config["ip"],
                                 out_config["port"]))
 
-    def run(self):
+        self.signal_socket = self.context.socket(zmq.PULL)
+        self.signal_socket.bind("tcp://{}:{}".format(
+                                signal_config["ip"],
+                                signal_config["port"]))
 
-        print("Proxy started")
+        self.poller = zmq.Poller()
+        self.poller.register(self.sub_socket, zmq.POLLIN)
+        self.poller.register(self.signal_socket, zmq.POLLIN)
 
-        while True:
+    def run(self, node_name):
 
-            msg = self.sub_socket.recv_string()
-            self.pub_socket.send_string(msg)
+        print("{} Proxy started".format(node_name))
+
+        quit = False
+
+        while not quit:
+
+            socks = dict(self.poller.poll())
+
+            # Message come from a worker,
+            # it has to be dispatch to a reducer
+            if socks.get(self.sub_socket) == zmq.POLLIN:
+                msg = self.sub_socket.recv_string()
+                self.pub_socket.send_string(msg)
+
+            # Message come from a joiner to stop
+            if socks.get(self.signal_socket) == zmq.POLLIN:
+                end = self.signal_socket.recv_string()
+                if end == "END_DATA":
+                    quit = True
+
+        self.close()
+
+        print("{} Proxy finished".format(node_name))
 
     def close(self):
         self.sub_socket.close()
         self.pub_socket.close()
-        self.context.term()
+        self.signal_socket.close()
 
 class MatchSummaryProxy(Proxy):
 
@@ -42,6 +69,10 @@ class MatchSummaryProxy(Proxy):
                             config
         )
 
+    def run(self):
+
+        super(MatchSummaryProxy, self).run("Match Summary")
+
 class TopkProxy(Proxy):
 
     def __init__(self, config):
@@ -49,4 +80,8 @@ class TopkProxy(Proxy):
                         "proxy-topk",
                         config
         )
+
+    def run(self):
+
+        super(TopkProxy, self).run("Top K")
 

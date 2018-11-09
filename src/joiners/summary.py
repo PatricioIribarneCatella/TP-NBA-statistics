@@ -19,7 +19,8 @@ class MatchSummary(object):
         self.socket = GatherSocket(config["match-summary"]["in"])
         self.dispatch_socket = DispatcherSocket(config["match-summary"]["out"])
         self.signal_socket = ReplicationSocket(config["match-summary"]["signal"])
-        self.stat_socket = ProducerSocket(config["match-summary"]["stats"]) 
+        self.stat_socket = ProducerSocket(config["match-summary"]["stats"])
+        self.signal_proxy_socket = ProducerSocket(config["match-summary"]["signal-proxy"])
 
     def run(self):
 
@@ -45,9 +46,13 @@ class MatchSummary(object):
         # Send signal to stat node
         self.stat_socket.send("0 END_DATA")
 
+        # Send signal to the proxy
+        self.signal_proxy_socket.send("END_DATA")
+
         self.socket.close()
         self.dispatch_socket.close()
         self.signal_socket.close()
+        self.signal_proxy_socket.close()
 
         print("Match summary finished")
 
