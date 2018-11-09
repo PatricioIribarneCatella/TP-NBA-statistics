@@ -15,8 +15,15 @@ En otra terminal se ejecuta el servidor:
 
 #### Servidor
 
+Primero se genera el script mediante:
+
+```bash
+ $./run-generator.py
+```
+
+y luego se ejecuta el servidor:
+
 ```bash
  $./run-server.sh
 ```
-
 
