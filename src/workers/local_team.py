@@ -5,30 +5,39 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from operations.rows import RowCompareExpander
 from operations.counters import LocalTeamCounter
-from middleware.connection import WorkerSocket
+from workers.worker import Worker
 
 #
 # format(msg) -> home_team home_points away_points away_team, date
 #
-class LocalTeamWorker(object):
+class LocalTeamWorker(Worker):
 
     def __init__(self, config):
-        
+       
+        super(LocalTeamWorker, self).__init__(
+                        "worker-local-team", config)
+
         def compare_great_or_equal(v1, v2):
             return v1 >= v2
 
-        self.socket = WorkerSocket(config["worker-local-team"])
         self.row_expander = RowCompareExpander("home_points,away_points",
                                                compare_great_or_equal,
                                                "home_team_won",
                                                "1,0")
         self.counter = LocalTeamCounter()
 
-    def _process_data(self, msg):
+
+    def _parse_data(self, msg):
 
         home_team, home_points, away_points, away_team, date = msg.split(" ")
 
         row = ["home_points=" + home_points, "away_points=" + away_points]
+
+        return row
+
+    def _process_data(self, msg):
+
+        row = self._parse_data(msg)
 
         row = self.row_expander.expand(row)
 
@@ -38,29 +47,7 @@ class LocalTeamWorker(object):
 
         self.counter.count(row)
 
-    def run(self):
-
-        print("Local team worker started")
-        
-        quit = False
-        end_data = False
-
-        while not quit:
-
-            socks = self.socket.poll()
-
-            # Message come from the dispatcher
-            if self.socket.test(socks, "work"):
-                work_msg = self.socket.recv(socks, "work")
-                self._process_data(work_msg)
-            elif end_data:
-                quit = True
-
-            # Message come from dispatcher to end
-            if self.socket.test(socks, "control"):
-                control_msg = self.socket.recv(socks, "control")
-                if control_msg == "0 END_DATA":
-                    end_data = True
+    def _send_end_signal(self):
 
         # Send result to 'Joiner'
         count = self.counter.get_count()
@@ -69,6 +56,7 @@ class LocalTeamWorker(object):
                             count["home_count"],
                             count["total_matches"]))
 
-        print("Local team worker finished")
+    def run(self):
 
+        super(LocalTeamWorker, self).run("Local team")
 

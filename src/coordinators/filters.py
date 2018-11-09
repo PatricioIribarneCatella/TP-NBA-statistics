@@ -5,6 +5,7 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from middleware.connection import SuscriberSocket, DispatcherSocket, ReplicationSocket
 from operations.filter import Filter
+
 import middleware.constants as const
 
 class FilterReplicator(object):
@@ -63,8 +64,7 @@ class FilterReplicator(object):
         
         for it in items:
             msg += it[0] + '=' + it[1] + '\n'
-
-        print(msg)
+        
         self.dispatchsocket.send(msg)
 
     def run(self):

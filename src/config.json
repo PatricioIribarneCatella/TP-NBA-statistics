@@ -3,6 +3,12 @@
 		"bind": {
 			"ip": "0.0.0.0",
 			"port": 4444
+		},
+		"stats": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 10001
+			}
 		}
 	},
 	"filter-match-summary": {
@@ -151,6 +157,10 @@
 		"out": {
 			"ip": "0.0.0.0",
 			"port": 7774
+		},
+		"signal": {
+			"ip": "0.0.0.0",
+			"port": 10100
 		}
 	},
 	"proxy-topk": {
@@ -161,6 +171,10 @@
 		"out": {
 			"ip": "0.0.0.0",
 			"port": 7775
+		},
+		"signal": {
+			"ip": "0.0.0.0",
+			"port": 10200
 		}
 	},
 	"reducer-match-summary": {
@@ -213,25 +227,64 @@
 				"ip": "0.0.0.0",
 				"port": 10000
 			}
+		},
+		"stats": {
+			"connect": {
+				"ip": "localhost",
+				"port": 10001
+			}
+		},
+		"signal-proxy": {
+			"connect": {
+				"ip": "localhost",
+				"port": 10100
+			}
 		}
 	},
 	"topk": {
 		"bind": {
 			"ip": "0.0.0.0",
 			"port": 8885
+		},
+		"stats": {
+			"connect": {
+				"ip": "localhost",
+				"port": 10001
+			}
+		},
+		"signal-proxy": {
+			"connect": {
+				"ip": "localhost",
+				"port": 10200
+			}
 		}
+
 	},
 	"local-points": {
 		"bind": {
 			"ip": "0.0.0.0",
 			"port": 9994
+		},
+		"stats": {
+			"connect": {
+				"ip": "localhost",
+				"port": 10001
+			}
 		}
+
 	},
 	"local-team": {
 		"bind": {
 			"ip": "0.0.0.0",
 			"port": 9998
+		},
+		"stats": {
+			"connect": {
+				"ip": "localhost",
+				"port": 10001
+			}
 		}
+
 	}
 }
 

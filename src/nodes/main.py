@@ -2,17 +2,24 @@ import sys
 import json
 import argparse
 from os import path
+from pathlib import Path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from coordinators.replicator import DataReplicator
 
-def main(data, pattern, config):
+def main(data, stats, pattern, num_of_stats, config):
 
     with open(config) as f:
         config_data = json.load(f)
 
-    replicator = DataReplicator(data, pattern, config_data)
+    # Create stats directory output
+    p = Path(stats)
+
+    if not p.exists():
+        p.mkdir()
+
+    replicator = DataReplicator(data, stats, pattern, num_of_stats, config_data)
 
     replicator.run()
 
@@ -27,6 +34,17 @@ if __name__ == '__main__':
             help='Origin data'
     )
     parser.add_argument(
+            '--stats',
+            default='stats/',
+            help='Directory to save statistics'
+    )
+    parser.add_argument(
+            '--nstats',
+            type=int,
+            default=1,
+            help='Number of statistics to be performed'
+    )
+    parser.add_argument(
             '--pattern',
             help='Match pattern for data fields'
     )
@@ -37,5 +55,5 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    main(args.data, args.pattern, args.config)
+    main(args.data, args.stats, args.pattern, args.nstats, args.config)
 

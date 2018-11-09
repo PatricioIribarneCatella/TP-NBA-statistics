@@ -3,16 +3,21 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import GatherSocket
+from middleware.connection import GatherSocket, ProducerSocket
+
+import middleware.constants as const
 
 class Topk(object):
 
-    def __init__(self, reducers, config):
+    def __init__(self, reducers, k_number, config):
 
-        self.num_reducers = reducers
         self.socket = GatherSocket(config["topk"])
+        self.stats_socket = ProducerSocket(config["topk"]["stats"])
+        self.signal_proxy_socket = ProducerSocket(config["topk"]["signal-proxy"])
+ 
+        self.topk_number = k_number
+        self.num_reducers = reducers
         self.data = {}
-        self.topk_number = 10
 
     def _process_data(self, msg):
 
@@ -29,7 +34,11 @@ class Topk(object):
         s = s[:self.topk_number]
 
         for player_info in s:
+            self.stats_socket.send("{} {} {}".format(
+                    const.TOPK_STAT, player_info[0], player_info[1]))
             print("{}, {}".format(player_info[0], player_info[1]))
+
+        self.stats_socket.send("0 END_DATA")
 
     def run(self):
 
@@ -46,10 +55,14 @@ class Topk(object):
             else:
                 self._process_data(msg)
 
-        self.socket.close()
-
         self._calculate_topk()
 
+        # Send signal to proxy
+        self.signal_proxy_socket.send("END_DATA")
+
+        self.socket.close()
+        self.signal_proxy_socket.close()
+        
         print("Top K finished")
 
 

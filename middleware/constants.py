@@ -1,3 +1,0 @@
-END_DATA = 0
-NEW_DATA = 1
-

@@ -102,3 +102,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# stats dir
+stats/
+run-server.sh
+pids.store

@@ -3,7 +3,9 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import GatherSocket
+from middleware.connection import GatherSocket, ProducerSocket
+
+import middleware.constants as const
 
 #
 # format(msg) -> two_ok total_two three_ok total_three_points
@@ -13,6 +15,7 @@ class LocalPointsCounter(object):
     def __init__(self, workers, config):
         self.workers = workers
         self.socket = GatherSocket(config["local-points"])
+        self.stats_socket = ProducerSocket(config["local-points"]["stats"])
 
     def run(self):
         
@@ -40,8 +43,13 @@ class LocalPointsCounter(object):
         two_pts = round(two_ok/total_two_points, 4) * 100
         three_pts = round(three_ok/total_three_points, 4) * 100 
 
-        print("2 pts: {}%, 3 pts: {}%".format(two_pts, three_pts))
+        self.stats_socket.send("{} 2 pts: {}%, 3 pts: {}%".format(
+                const.LOCAL_POINTS_STAT, two_pts, three_pts))
 
+        # Send signal to stat node
+        self.stats_socket.send("0 END_DATA")
+
+        print("2 pts: {}%, 3 pts: {}%".format(two_pts, three_pts))
         print("Local Points counter finished")
 
 #
@@ -52,6 +60,7 @@ class LocalTeamCounter(object):
     def __init__(self, workers, config):
         self.workers = workers
         self.socket = GatherSocket(config["local-team"])
+        self.stats_socket = ProducerSocket(config["local-team"]["stats"])
 
     def run(self):
 
@@ -74,8 +83,13 @@ class LocalTeamCounter(object):
 
         local_team = round(total_home_team/total_matches, 4) * 100
 
+        self.stats_socket.send("{} local team: {}%".format(
+            const.LOCAL_TEAM_STAT, local_team))
+        
+        # Send signal to stat node
+        self.stats_socket.send("0 END_DATA")
+       
         print("local team: {}%".format(local_team))
-
         print("Local Team counter finished")
 
 
