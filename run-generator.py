@@ -15,15 +15,19 @@ def generate(summary_workers,
 
     with open("run-server.sh", "w+") as f:
         
-        f.write("#!/bin/bash\n")
+        f.write("#!/bin/bash\n\n")
 
         f.write("#############\n")
         f.write("# Run nodes #\n")
         f.write("#############\n")
 
+        f.write("\n")
+
         f.write("###############################\n")
         f.write("## Run 'Match Summary' nodes ##\n")
         f.write("###############################\n")
+
+        f.write("\n")
 
         f.write("python3 nodes/match_summary_filter.py --config=config.json &\n")
 
@@ -39,9 +43,13 @@ def generate(summary_workers,
 
         f.write("python3 nodes/match_summary.py --reducers={} --config=config.json &\n".format(summary_reducers))
 
+        f.write("\n")
+
         f.write("################################\n")
         f.write("## Run 'Local Team Won' nodes ##\n")
         f.write("################################\n")
+
+        f.write("\n")
 
         f.write("for id in {1.." + str(local_team_workers) + "}; do\n")
         f.write("     python3 nodes/local_team_worker.py --config=config.json &\n")
@@ -49,21 +57,29 @@ def generate(summary_workers,
 
         f.write("python3 nodes/local_team.py --config=config.json --workers={} &\n".format(local_team_workers))
 
+        f.write("\n")
+
         f.write("##############################\n")
         f.write("## Run 'Local Points' nodes ##\n")
         f.write("##############################\n")
+
+        f.write("\n")
 
         f.write("python3 nodes/local_points_filter.py --config=config.json &\n")
 
         f.write("for id in {1.." + str(local_points_workers) + "}; do\n")
         f.write("     python3 nodes/local_points_worker.py --config=config.json &\n")
-        f.write("done")
+        f.write("done\n")
 
         f.write("python3 nodes/local_points.py --config=config.json --workers={} &\n".format(local_points_workers))
+
+        f.write("\n")
 
         f.write("#######################\n")
         f.write("## Run 'Top K' nodes ##\n")
         f.write("#######################\n")
+
+        f.write("\n")
 
         f.write("python3 nodes/topk_filter.py --config=config.json &\n")
         
@@ -79,6 +95,7 @@ def generate(summary_workers,
 
         f.write("python3 nodes/topk.py --reducers={} --config=config.json &\n".format(topk_reducers))
 
+        f.write("\n")
 
 if __name__ == "__main__":
 
