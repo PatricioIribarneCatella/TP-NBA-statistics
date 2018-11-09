@@ -3,6 +3,12 @@
 # Runs the client with the input data
 
 STATS=$1
+
+if [ -z "$1" ]
+   then
+       STATS="--nstats=4"
+fi
+
 NSTATS="${STATS#*=}"
 
 DATA="NBA-data/shot log*"
