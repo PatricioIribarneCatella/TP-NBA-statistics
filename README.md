@@ -16,12 +16,12 @@ En otra terminal se ejecuta el servidor:
 #### Servidor
 
 ```bash
- $./run-server.py [--mworkers=NUM(1)    |
-		   --mreducers=NUM(2)   | 
-		   --topkworkers=NUM(1) |
-		   --topkreducers=NUM(2)|
-		   --ltworkers=NUM(2)   |
-		   --lpworkers=NUM(2)   |]
+ $./run-server.py [--mworkers=NUM(1)     |
+		   --mreducers=NUM(2)    | 
+		   --topkworkers=NUM(1)  |
+		   --topkreducers=NUM(2) |
+		   --ltworkers=NUM(2)    |
+		   --lpworkers=NUM(2)    |]
 
 	Argumentos:
 	  - mworkers: Match Summary workers
@@ -30,5 +30,10 @@ En otra terminal se ejecuta el servidor:
 	  - topkreducers: Top K reducers
 	  - ltworkers: Local Team workers
 	  - lpworkers: Local Points workers
+```
+Para terminar los nodos, ejecutar:
+
+```bash
+ $./kill-server.py
 ```
 
