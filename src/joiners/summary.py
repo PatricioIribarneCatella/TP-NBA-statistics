@@ -3,10 +3,10 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import GatherSocket, DispatcherSocket
-from middleware.connection import ReplicationSocket, ProducerSocket
+from src.middleware.connection import GatherSocket, DispatcherSocket
+from src.middleware.connection import ReplicationSocket, ProducerSocket
 
-import middleware.constants as const
+import src.middleware.constants as const
 
 #
 # format(msg) -> home_team home_points away_points away_team

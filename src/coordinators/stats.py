@@ -1,5 +1,5 @@
 import uuid
-import middleware.constants as const
+import src.middleware.constants as const
 
 class StatsManager(object):
 

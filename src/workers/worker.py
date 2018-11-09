@@ -3,7 +3,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import WorkerSocket
+from src.middleware.connection import WorkerSocket
 
 class Worker(object):
 

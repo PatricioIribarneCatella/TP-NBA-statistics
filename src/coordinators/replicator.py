@@ -5,9 +5,10 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import ReplicationSocket, GatherSocket
-from coordinators.stats import StatsManager
-import middleware.constants as const
+from src.middleware.connection import ReplicationSocket, GatherSocket
+from src.coordinators.stats import StatsManager
+
+import src.middleware.constants as const
 
 class DataReplicator(object):
 

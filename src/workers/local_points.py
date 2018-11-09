@@ -3,9 +3,9 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from operations.rows import RowReducer
-from operations.counters import LocalPointsCounter
-from workers.worker import Worker
+from src.operations.rows import RowReducer
+from src.operations.counters import LocalPointsCounter
+from src.workers.worker import Worker
 
 class LocalPointsWorker(Worker):
 

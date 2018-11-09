@@ -5,37 +5,29 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from joiners.count import LocalTeamCounter
+from src.workers.local_team import LocalTeamWorker
 
-def main(workers, config):
+def main(config):
 
     with open(config) as f:
         config_data = json.load(f)
+        
+    worker = LocalTeamWorker(config_data)
 
-    joiner = LocalTeamCounter(workers, config_data)
-
-    joiner.run()
-
+    worker.run()
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-                    description='Local team NBA',
+                    description='Local team worker NBA',
                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
             '--config',
             help='The Net Topology configuration file'
     )
-    parser.add_argument(
-            '--workers',
-            type=int,
-            default=1,
-            help='The quantity of workers connected to it'
-    )
 
     args = parser.parse_args()
 
-    main(args.workers, args.config)
-
+    main(args.config)
 

@@ -10,8 +10,8 @@ from subprocess import Popen
 #
 
 PYTHON="python3"
-NODES_DIR="nodes/"
-CONFIG="--config=config.json"
+NODES_DIR="src/nodes/"
+CONFIG="--config=src/onfig.json"
 
 def run(summary_workers,
         summary_reducers,

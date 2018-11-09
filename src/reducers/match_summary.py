@@ -3,8 +3,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import SuscriberSocket, ProducerSocket
-from reducers.reducer import Reducer
+from src.reducers.reducer import Reducer
 
 class MatchSummaryReducer(Reducer):
 
