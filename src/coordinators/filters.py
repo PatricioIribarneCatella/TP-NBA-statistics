@@ -3,10 +3,10 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from src.middleware.connection import SuscriberSocket, DispatcherSocket, ReplicationSocket
-from src.operations.filter import Filter
+from middleware.connection import SuscriberSocket, DispatcherSocket, ReplicationSocket
+from operations.filter import Filter
 
-import src.middleware.constants as const
+import middleware.constants as const
 
 class FilterReplicator(object):
 

@@ -5,7 +5,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from src.joiners.summary import MatchSummary
+from joiners.summary import MatchSummary
 
 def main(num_reducers, config):
 

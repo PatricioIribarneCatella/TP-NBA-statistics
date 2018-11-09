@@ -5,7 +5,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from src.workers.local_points import LocalPointsWorker
+from workers.local_points import LocalPointsWorker
 
 def main(config):
 

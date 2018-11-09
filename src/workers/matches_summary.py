@@ -3,8 +3,8 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from src.operations.rows import RowMatchExpander
-from src.workers.worker import Worker
+from operations.rows import RowMatchExpander
+from workers.worker import Worker
 
 class MatchSummaryWorker(Worker):
 

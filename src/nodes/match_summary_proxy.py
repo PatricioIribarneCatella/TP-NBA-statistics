@@ -5,7 +5,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from src.middleware.proxy import MatchSummaryProxy
+from middleware.proxy import MatchSummaryProxy
 
 def main(config):
 

@@ -5,7 +5,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from src.workers.local_team import LocalTeamWorker
+from workers.local_team import LocalTeamWorker
 
 def main(config):
 

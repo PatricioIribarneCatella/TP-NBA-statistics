@@ -5,7 +5,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from src.coordinators.filters import MatchSummaryFilter
+from coordinators.filters import MatchSummaryFilter
 
 def main(config):
 

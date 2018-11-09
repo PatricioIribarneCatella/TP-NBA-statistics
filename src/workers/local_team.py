@@ -3,9 +3,9 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from src.operations.rows import RowCompareExpander
-from src.operations.counters import LocalTeamCounter
-from src.workers.worker import Worker
+from operations.rows import RowCompareExpander
+from operations.counters import LocalTeamCounter
+from workers.worker import Worker
 
 #
 # format(msg) -> home_team home_points away_points away_team, date

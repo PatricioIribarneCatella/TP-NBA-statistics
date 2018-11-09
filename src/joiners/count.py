@@ -3,9 +3,9 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from src.middleware.connection import GatherSocket, ProducerSocket
+from middleware.connection import GatherSocket, ProducerSocket
 
-import src.middleware.constants as const
+import middleware.constants as const
 
 #
 # format(msg) -> two_ok total_two three_ok total_three_points
