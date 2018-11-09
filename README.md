@@ -10,6 +10,9 @@ NBA statistics (Sistemas Distribuidos I)
 
 ```bash
  $./run-client.py
+
+	Se generará un directorio "stats"
+	 con las estadísticas
 ```
 En otra terminal se ejecuta el servidor:
 
