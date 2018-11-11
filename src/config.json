@@ -9,12 +9,50 @@
 				"ip": "0.0.0.0",
 				"port": 10001
 			}
+		},
+		"signal": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 11000
+			}
+		}
+	},
+	"input-worker": {
+		"nodes": {
+			"dispatcher": {
+				"connect": {
+					"ip": "localhost",
+					"port": 4444
+				}
+			},
+			"signal": {
+				"connect": {
+					"ip": "localhost",
+					"port": 11000
+				}
+			},
+			"filters": [
+				{
+					"ip": "localhost",
+					"port": 11001
+				},
+				{
+					"ip": "localhost",
+					"port": 11002
+				},
+				{
+					"ip": "localhost",
+					"port": 11003
+				}
+			]
 		}
 	},
 	"filter-match-summary": {
-		"connect": {
-			"ip": "localhost",
-			"port": 4444
+		"input": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 11001
+			}
 		},
 		"bind": {
 			"ip": "0.0.0.0",
@@ -28,9 +66,11 @@
 		}
 	},
 	"filter-topk": {
-		"connect": {
-			"ip": "localhost",
-			"port": 4444
+		"input": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 11002
+			}
 		},
 		"bind": {
 			"ip": "0.0.0.0",
@@ -45,9 +85,11 @@
 
 	},
 	"filter-local-points": {
-		"connect": {
-			"ip": "localhost",
-			"port": 4444
+		"input": {
+			"bind": {
+				"ip": "0.0.0.0",
+				"port": 11003
+			}
 		},
 		"bind":{
 			"ip": "0.0.0.0",

@@ -3,26 +3,26 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import SuscriberSocket, DispatcherSocket, ReplicationSocket
+from middleware.connection import GatherSocket, DispatcherSocket, ReplicationSocket
 from operations.filter import Filter
 
 import middleware.constants as const
 
 class FilterReplicator(object):
 
-    def __init__(self, pattern, node, config):
+    def __init__(self, pattern, node, num_input_workers, config):
         
-        self.socket = SuscriberSocket(
-                    config[node],
-                    [const.NEW_DATA, const.END_DATA])
+        self.socket = GatherSocket(config[node]["input"])
         
         self.dispatchsocket = DispatcherSocket(
                     config[node])
 
         # Internal socket to send signal
-        # to stop running
-        conf = config[node]["signal"]
-        self.signalsocket = ReplicationSocket(conf)
+        # to stop running workers
+        self.signalsocket = ReplicationSocket(
+                config[node]["signal"])
+
+        self.input_workers = num_input_workers
 
         self.filter = Filter(pattern)
 
@@ -31,7 +31,7 @@ class FilterReplicator(object):
         # Split the id from the row
         mid, row = msg.split(" ", 1)
 
-        if (mid == const.END_DATA):
+        if (int(mid) == const.END_DATA):
             return mid, ""
 
         row = row.split('\n')
@@ -71,43 +71,53 @@ class FilterReplicator(object):
  
         print("Filter started")
 
-        mid, row = self._recv_data()
+        quit = False
+        count = 0
 
-        while (int(mid) == const.NEW_DATA):
+        while not quit:
+
+            mid, row = self._recv_data()
+
+            if (int(mid) == const.END_DATA):
+                count += 1
+                if count == self.input_workers:
+                    quit = True
+                continue
 
             if self.filter.filter(row):
                 self._send_data(row)
 
-            mid, row = self._recv_data()
-
-        self.signalsocket.send("{tid} {data}".format(tid=const.END_DATA, data="END_DATA"))
+        self.signalsocket.send("{} {}".format(const.END_DATA, "END_DATA"))
 
         print("Filter finished")
 
 class MatchSummaryFilter(FilterReplicator):
 
-    def __init__(self, config):
+    def __init__(self, input_workers, config):
         super(MatchSummaryFilter, self).__init__(
                             "shot_result=SCORED",
                             "filter-match-summary",
+                            input_workers,
                             config
         )
 
 class LocalPointsFilter(FilterReplicator):
 
-    def __init__(self, config):
+    def __init__(self, input_workers, config):
         super(LocalPointsFilter, self).__init__(
                             "home_scored=Yes",
                             "filter-local-points",
+                            input_workers,
                             config
         )
 
 class TopkFilter(FilterReplicator):
 
-    def __init__(self, config):
+    def __init__(self, input_workers, config):
         super(TopkFilter, self).__init__(
                         "shot_result=SCORED",
                         "filter-topk",
+                        input_workers,
                         config
         )
 

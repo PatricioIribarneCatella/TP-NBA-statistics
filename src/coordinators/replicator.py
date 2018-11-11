@@ -1,99 +1,82 @@
 import sys
-import csv
-import glob
 from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import ReplicationSocket, GatherSocket
-from coordinators.stats import StatsManager
+from operations.rows import RowReducer
+from middleware.connection import InputWorkerSocket
 
 import middleware.constants as const
 
-class DataReplicator(object):
+class InputDataWorker(object):
 
-    def __init__(self, data, stats, pattern, num_of_stats, config):
+    def __init__(self, config):
         
-        self.data_path = data
-        self.patterns = pattern.strip('[]').replace(' ', '_').split(',')
-        self.stats_socket = GatherSocket(config["main"]["stats"])
-        self.socket = ReplicationSocket(config["main"])
-        self.num_of_stats = num_of_stats
+        self.socket = InputWorkerSocket(config["input-worker"])
 
-        self.stats_manager = StatsManager(stats)
+        self.row_reducer = RowReducer(["home_team",
+                                       "away_team",
+                                       "home_scored",
+                                       "player",
+                                       "date",
+                                       "points",
+                                       "shot_result"])
 
-    def _parse_data(self):
+    def _encode_data(self, data):
 
-        rows = []
+        encoded_data = ""
 
-        # Load csv files
-        for file_path in glob.glob(self.data_path):
-            with open(file_path, newline='') as csvf:
-                reader = csv.DictReader(csvf)
-                for row in reader:
-                    self._send_data(row)
+        for item in data:
 
-        return rows
+            encoded_data += item + "\n"
 
-    def _parse_row(self, row):
+        return encoded_data
 
-        new_row = {}
+    def _process_data(self, msg):
+        
+        mid, data = msg.split(" ", 1)
 
-        # Remove all spaces and convert it to '_'
-        for key in row.keys():
-            new_key = key.replace(' ', '_')
-            new_row[new_key] = row[key]
+        data = data.split("\n")
 
-        # Transform row (dictionary) in a string
-        # to send, considering the pattern mapping
-        parsed_row = ""
-        for mapping in self.patterns:
-            new, old = mapping.split('=')
-            parsed_row += new + '=' + new_row[old] + '\n'
+        # Remove the last item because
+        # it´s an empty string
+        data.pop()
 
-        return parsed_row
+        data = self.row_reducer.reduce(data)
+
+        return self._encode_data(data)
 
     def _send_data(self, row):
 
-        row = self._parse_row(row)
-        msg = "{data_id} {data_row}".format(data_id=const.NEW_DATA, data_row=row)
+        msg = "{} {}".format(const.NEW_DATA, row)
         self.socket.send(msg)
-
-    def _process_stat(self, msg):
-
-        if msg == "0 END_DATA":
-            return
-
-        # Split into the stat id and
-        # the data itself
-        mid, data = msg.split(" ", 1)
-
-        self.stats_manager.store(mid, data)
-
-    def _receive_statistics(self):
-
-        count = 0
-
-        while count < self.num_of_stats:
-            
-            msg = self.stats_socket.recv()
-
-            self._process_stat(msg)
-
-            if msg == "0 END_DATA":
-                count += 1
 
     def run(self):
 
-        # Wait for user to start
-        input('Enter to start')
-        self._parse_data()
+        print("Input worker started")
+
+        quit = False
+        end_data = False
+
+        while not quit:
+
+            socks = self.socket.poll()
+
+            # Message come from main dispatcher
+            if self.socket.test(socks, "work"):
+                work_msg = self.socket.recv(socks, "work")
+                work_msg = self._process_data(work_msg)
+                self._send_data(work_msg)
+            elif end_data:
+                quit = True
+
+            # Message come from dispatcher to end
+            if self.socket.test(socks, "control"):
+                control_msg = self.socket.recv(socks, "control")
+                if control_msg == "0 END_DATA":
+                    end_data = True
         
-        self.socket.send("{data_id} END_DATA".format(data_id=const.END_DATA))
+        self.socket.send("{} END_DATA".format(const.END_DATA))
 
-        self._receive_statistics()
-
-        # Stats finished
-        input('Enter to finish')
-
+        print("Input worker finished")
 

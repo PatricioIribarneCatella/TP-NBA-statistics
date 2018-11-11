@@ -10,7 +10,7 @@ from subprocess import Popen
 PYTHON="python3"
 NODE_DIR="src/nodes/"
 DATA="data/shot log*"
-PATTERN="[player=shoot player,shot_result=current shot outcome,home_scored=home game,home_team=home team,away_team=away team,points=points,date=date]"
+PATTERN="[player=shoot player,shot_result=current shot outcome,home_scored=home game]"
 CONFIG_FILE="src/config.json"
 
 def main(nstats):

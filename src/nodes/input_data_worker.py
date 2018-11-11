@@ -2,39 +2,33 @@ import sys
 import json
 import argparse
 from os import path
+from pathlib import Path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from coordinators.filters import LocalPointsFilter
+from coordinators.replicator import InputDataWorker
 
-def main(config, input_workers):
+def main(config):
 
     with open(config) as f:
         config_data = json.load(f)
 
-    replicator = LocalPointsFilter(input_workers, config_data)
+    worker = InputDataWorker(config_data)
 
-    replicator.run()
-
+    worker.run()
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-                    description='Local Points Filter - NBA',
+                    description='Input worker NBA Statistics',
                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
             '--config',
             help='The Net Topology configuration file'
     )
-    parser.add_argument(
-            '--iworkers',
-            type=int,
-            default=2,
-            help='The number of input workers'
-    )
 
     args = parser.parse_args()
 
-    main(args.config, args.iworkers)
+    main(args.config)
 

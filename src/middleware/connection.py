@@ -110,6 +110,77 @@ class GatherSocket(object):
     def close(self):
         self.socket.close()
 
+class InputWorkerSocket(object):
+
+    def __init__(self, config):
+        
+        # Get the context and create sockets
+        self.context = zmq.Context()
+        
+        net_config = config["nodes"]
+
+        # Channel to receive work
+        net_to_dispatcher = net_config["dispatcher"]["connect"]
+        self.work_socket = self.context.socket(zmq.PULL)
+        self.work_socket.connect("tcp://{}:{}".format(
+                                net_to_dispatcher["ip"],
+                                net_to_dispatcher["port"]))
+
+        # Channel to receive stop signal
+        net_to_signal = net_config["signal"]["connect"]
+        self.control_socket = self.context.socket(zmq.SUB)
+        self.control_socket.connect("tcp://{}:{}".format(
+                                    net_to_signal["ip"],
+                                    net_to_signal["port"]))
+        self.control_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+
+        # Channels to send processed work
+        net_to_filters = net_config["filters"]
+        self.sockets = []
+
+        for net in net_to_filters:
+            s = self.context.socket(zmq.PUSH)
+            s.connect("tcp://{}:{}".format(net["ip"], net["port"]))
+            self.sockets.append(s)
+
+        self.poll_sockets = {
+            "work": self.work_socket,
+            "control": self.control_socket,
+        }
+
+        # Poller multiplexer
+        self.poller = zmq.Poller()
+        self.poller.register(self.work_socket, zmq.POLLIN)
+        self.poller.register(self.control_socket, zmq.POLLIN)
+
+    # Set the polling with a
+    # time-out of 0.5 seconds
+    def poll(self):
+
+        return dict(self.poller.poll(500))
+
+    def test(self, sockets, sock_name):
+
+        s = self.poll_sockets[sock_name]
+
+        return sockets.get(s) == zmq.POLLIN
+
+    def recv(self, sockets, sock_name):
+
+        return self.poll_sockets[sock_name].recv_string()
+
+    def send(self, data):
+
+        # Send to all waiting filters
+        for s in self.sockets:
+            s.send_string(data)
+
+    def close(self):
+        self.work_socket.close()
+        self.control_socket.close()
+        for s in self.sockets:
+            s.close()
+
 class WorkerSocket(object):
 
     def __init__(self, config):
@@ -168,9 +239,9 @@ class WorkerSocket(object):
 
         return self.poll_sockets[sock_name].recv_string()
 
-    def send(send, sock_name, data):
+    def send(self, sock_name, data):
 
-        send.poll_sockets[sock_name].send_string(data)
+        self.poll_sockets[sock_name].send_string(data)
 
     def close(self):
         self.work_socket.close()
