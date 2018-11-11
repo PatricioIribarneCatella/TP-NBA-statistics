@@ -3,7 +3,9 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import GatherSocket, DispatcherSocket, ReplicationSocket
+from middleware.connection import GatherSocket
+from middleware.connection import DispatcherSocket
+from middleware.connection import ReplicationSocket
 from operations.filter import Filter
 
 import middleware.constants as const
@@ -31,7 +33,7 @@ class FilterReplicator(object):
         # Split the id from the row
         mid, row = msg.split(" ", 1)
 
-        if (int(mid) == const.END_DATA):
+        if (int(mid) == const.END_DATA_ID):
             return mid, ""
 
         row = row.split('\n')
@@ -78,7 +80,7 @@ class FilterReplicator(object):
 
             mid, row = self._recv_data()
 
-            if (int(mid) == const.END_DATA):
+            if (int(mid) == const.END_DATA_ID):
                 count += 1
                 if count == self.input_workers:
                     quit = True
@@ -87,7 +89,8 @@ class FilterReplicator(object):
             if self.filter.filter(row):
                 self._send_data(row)
 
-        self.signalsocket.send("{} {}".format(const.END_DATA, "END_DATA"))
+        self.signalsocket.send("{} {}".format(
+            const.END_DATA_ID, const.END_DATA))
 
         print("{} Filter finished".format(node_name))
 

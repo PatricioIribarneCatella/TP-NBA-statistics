@@ -14,6 +14,7 @@ class StatsManager(object):
         self.topk_fname = "topk_"
         self.summary_fname = "mathes_summary_"
         self.local_fname = "local_team_"
+        self.fext = ".stat"
 
         self.handlers = {
             const.TOPK_STAT: self._topk_stat_handler,
@@ -22,6 +23,10 @@ class StatsManager(object):
             const.LOCAL_TEAM_STAT: self._local_team_handler
         }
 
+    def _build_path(self, stat_name):
+
+        return self.stats_path + stat_name + self.stats_id + self.fext
+
     def _write_stat(self, data, path):
 
         with open(path, "a+") as f:
@@ -29,19 +34,19 @@ class StatsManager(object):
 
     def _topk_stat_handler(self, data):
     
-        path = self.stats_path + self.topk_fname + self.stats_id
+        path = self._build_path(self.topk_fname)
 
         self._write_stat(data, path)
         
     def _match_summary_handler(self, data):
 
-        path = self.stats_path + self.summary_fname + self.stats_id
+        path = self._build_path(self.summary_fname)
 
         self._write_stat(data, path)
 
     def _local_team_handler(self, data):
     
-        path = self.stats_path + "local_team_" + self.stats_id
+        path = self._build_path(self.local_fname)
 
         self._write_stat(data, path)
 

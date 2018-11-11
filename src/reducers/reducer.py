@@ -5,6 +5,8 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from middleware.connection import SuscriberSocket, ProducerSocket
 
+import middleware.constants as const
+
 class Reducer(object):
 
     def __init__(self, rid, workers, node, config):
@@ -25,7 +27,7 @@ class Reducer(object):
 
         msgid, data = msg.split(" ", 1)
 
-        if (data == "END_DATA"):
+        if (data == const.END_DATA):
             return msgid, data
 
         data = data.split("\n")
@@ -47,7 +49,7 @@ class Reducer(object):
 
             key, data = self._recv_data()
 
-            if (data == "END_DATA"):
+            if (data == const.END_DATA):
                 end_data_counter += 1
                 if end_data_counter == self.num_workers:
                     quit = True
@@ -58,7 +60,7 @@ class Reducer(object):
         self._send_data()
         
         # Send 'end' message
-        self.joiner_socket.send("END_DATA")
+        self.joiner_socket.send(const.END_DATA)
 
         print("{} reducer finished".format(node_name))
 

@@ -35,7 +35,8 @@ class DataDispatcher(object):
                     self._send_data(row)
 
         # Send signal to 'input workers' to finish
-        self.signal_socket.send("{} END_DATA".format(const.END_DATA))
+        self.signal_socket.send("{} {}".format(
+                const.END_DATA_ID, const.END_DATA))
 
     def _parse_row(self, row):
 
@@ -62,12 +63,13 @@ class DataDispatcher(object):
     def _send_data(self, row):
 
         row = self._parse_row(row)
-        msg = "{} {}".format(const.NEW_DATA, row)
+        msg = "{} {}".format(const.NEW_DATA_ID, row)
         self.socket.send(msg)
 
     def _process_stat(self, msg):
 
-        if msg == "0 END_DATA":
+        if msg == "{} {}".format(
+                const.END_DATA_ID, const.END_DATA):
             return
 
         # Split into the stat id and
@@ -86,7 +88,8 @@ class DataDispatcher(object):
 
             self._process_stat(msg)
 
-            if msg == "0 END_DATA":
+            if msg == "{} {}".format(
+                    const.END_DATA_ID, const.END_DATA):
                 count += 1
 
     def run(self):

@@ -32,7 +32,7 @@ class MatchSummary(object):
 
             msg = self.socket.recv()
 
-            if msg == "END_DATA":
+            if msg == const.END_DATA:
                 end_data_counter += 1
             else:
                 self.dispatch_socket.send(msg)
@@ -41,13 +41,16 @@ class MatchSummary(object):
                 print(msg)
 
         # Send signal to all the workers
-        self.signal_socket.send("0 END_DATA")
+        self.signal_socket.send("{} {}".format(
+            const.END_DATA_ID, const.END_DATA))
 
         # Send signal to stat node
-        self.stat_socket.send("0 END_DATA")
+        self.stat_socket.send("{} {}".format(
+            const.END_DATA_ID, const.END_DATA))
 
         # Send signal to the proxy
-        self.signal_proxy_socket.send("END_DATA")
+        self.signal_proxy_socket.send("{}".format(
+            const.END_DATA))
 
         self.socket.close()
         self.dispatch_socket.close()

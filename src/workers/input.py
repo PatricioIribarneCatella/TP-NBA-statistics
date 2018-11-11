@@ -48,7 +48,7 @@ class InputDataWorker(object):
 
     def _send_data(self, row):
 
-        msg = "{} {}".format(const.NEW_DATA, row)
+        msg = "{} {}".format(const.NEW_DATA_ID, row)
         self.socket.send(msg)
 
     def run(self):
@@ -73,10 +73,12 @@ class InputDataWorker(object):
             # Message come from dispatcher to end
             if self.socket.test(socks, "control"):
                 control_msg = self.socket.recv(socks, "control")
-                if control_msg == "0 END_DATA":
+                if control_msg == "{} {}".format(
+                        const.END_DATA_ID, const.END_DATA):
                     end_data = True
         
-        self.socket.send("{} END_DATA".format(const.END_DATA))
+        self.socket.send("{} {}".format(
+            const.END_DATA_ID, const.END_DATA))
 
         print("Input worker finished")
 
