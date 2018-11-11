@@ -6,7 +6,7 @@ from os import path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from middleware.connection import DispatcherSocket, GatherSocket, ReplicationSocket
-from coordinators.stats import StatsManager
+from coordinator.stats import StatsManager
 
 import middleware.constants as const
 
@@ -33,6 +33,9 @@ class DataDispatcher(object):
                 reader = csv.DictReader(csvf)
                 for row in reader:
                     self._send_data(row)
+
+        # Send signal to 'input workers' to finish
+        self.signal_socket.send("{} END_DATA".format(const.END_DATA))
 
     def _parse_row(self, row):
 
@@ -91,9 +94,6 @@ class DataDispatcher(object):
         # Wait for user to start
         input('Enter to start')
         self._parse_data()
-
-        print("\nHolaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n")
-        self.signal_socket.send("{} END_DATA".format(const.END_DATA))
 
         self._receive_statistics()
 

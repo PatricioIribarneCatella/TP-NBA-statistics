@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from coordinators.dispatcher import DataDispatcher
+from coordinator.dispatcher import DataDispatcher
 
 def main(data, stats, pattern, num_of_stats, config):
 

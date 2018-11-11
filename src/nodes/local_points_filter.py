@@ -5,7 +5,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from coordinators.filters import LocalPointsFilter
+from filters.local_points import LocalPointsFilter
 
 def main(config, input_workers):
 

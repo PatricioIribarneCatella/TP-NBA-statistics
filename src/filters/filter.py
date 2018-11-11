@@ -67,9 +67,9 @@ class FilterReplicator(object):
         
         self.dispatchsocket.send(msg)
 
-    def run(self):
+    def run(self, node_name):
  
-        print("Filter started")
+        print("{} Filter started".format(node_name))
 
         quit = False
         count = 0
@@ -89,35 +89,5 @@ class FilterReplicator(object):
 
         self.signalsocket.send("{} {}".format(const.END_DATA, "END_DATA"))
 
-        print("Filter finished")
-
-class MatchSummaryFilter(FilterReplicator):
-
-    def __init__(self, input_workers, config):
-        super(MatchSummaryFilter, self).__init__(
-                            "shot_result=SCORED",
-                            "filter-match-summary",
-                            input_workers,
-                            config
-        )
-
-class LocalPointsFilter(FilterReplicator):
-
-    def __init__(self, input_workers, config):
-        super(LocalPointsFilter, self).__init__(
-                            "home_scored=Yes",
-                            "filter-local-points",
-                            input_workers,
-                            config
-        )
-
-class TopkFilter(FilterReplicator):
-
-    def __init__(self, input_workers, config):
-        super(TopkFilter, self).__init__(
-                        "shot_result=SCORED",
-                        "filter-topk",
-                        input_workers,
-                        config
-        )
+        print("{} Filter finished".format(node_name))
 

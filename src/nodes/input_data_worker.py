@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from coordinators.replicator import InputDataWorker
+from workers.input import InputDataWorker
 
 def main(config):
 
