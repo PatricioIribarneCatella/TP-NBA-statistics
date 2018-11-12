@@ -6,6 +6,8 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from operations.rows import RowReducer
 from workers.worker import Worker
 
+import middleware.constants as const
+
 class TopkWorker(Worker):
 
     def __init__(self, reducers, config):
@@ -65,7 +67,8 @@ class TopkWorker(Worker):
 
         # Send 'finish' message to all the reducers
         for r in range(1, self.num_reducers + 1):
-            self.socket.send("join", "{rid} END_DATA".format(rid=r))
+            self.socket.send("join", "{} {}".format(
+                                r, const.END_DATA))
 
     def run(self):
 
