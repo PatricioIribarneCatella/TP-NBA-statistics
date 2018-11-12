@@ -5,26 +5,27 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from middleware.connection import ReplicationSocket, GatherSocket
-from coordinators.stats import StatsManager
+from middleware.connection import DispatcherSocket, GatherSocket, ReplicationSocket
+from coordinator.stats import StatsManager
 
 import middleware.constants as const
 
-class DataReplicator(object):
+class DataDispatcher(object):
 
-    def __init__(self, data, stats, pattern, num_of_stats, config):
+    def __init__(self, data, stats_path, pattern, num_of_stats, config):
+        
+        pattern = pattern.strip('[]').replace(' ', '_').split(',')
+        self.pattern = dict(list(map(lambda it: (it.split("=")[1], it.split("=")[0]), pattern)))
+
+        self.stats_socket = GatherSocket(config["main"]["stats"])
+        self.signal_socket = ReplicationSocket(config["main"]["signal"])
+        self.socket = DispatcherSocket(config["main"])
         
         self.data_path = data
-        self.patterns = pattern.strip('[]').replace(' ', '_').split(',')
-        self.stats_socket = GatherSocket(config["main"]["stats"])
-        self.socket = ReplicationSocket(config["main"])
         self.num_of_stats = num_of_stats
-
-        self.stats_manager = StatsManager(stats)
+        self.stats_manager = StatsManager(stats_path)
 
     def _parse_data(self):
-
-        rows = []
 
         # Load csv files
         for file_path in glob.glob(self.data_path):
@@ -33,7 +34,9 @@ class DataReplicator(object):
                 for row in reader:
                     self._send_data(row)
 
-        return rows
+        # Send signal to 'input workers' to finish
+        self.signal_socket.send("{} {}".format(
+                const.END_DATA_ID, const.END_DATA))
 
     def _parse_row(self, row):
 
@@ -44,24 +47,29 @@ class DataReplicator(object):
             new_key = key.replace(' ', '_')
             new_row[new_key] = row[key]
 
-        # Transform row (dictionary) in a string
-        # to send, considering the pattern mapping
+        # Substitute name fields considering
+        # the pattern mapping received
         parsed_row = ""
-        for mapping in self.patterns:
-            new, old = mapping.split('=')
-            parsed_row += new + '=' + new_row[old] + '\n'
+
+        for item in list(new_row.items()):
+            if item[0] in self.pattern:
+                field = self.pattern[item[0]]
+            else:
+                field = item[0]
+            parsed_row += field + '=' + item[1] + '\n'
 
         return parsed_row
 
     def _send_data(self, row):
 
         row = self._parse_row(row)
-        msg = "{data_id} {data_row}".format(data_id=const.NEW_DATA, data_row=row)
+        msg = "{} {}".format(const.NEW_DATA_ID, row)
         self.socket.send(msg)
 
     def _process_stat(self, msg):
 
-        if msg == "0 END_DATA":
+        if msg == "{} {}".format(
+                const.END_DATA_ID, const.END_DATA):
             return
 
         # Split into the stat id and
@@ -80,7 +88,8 @@ class DataReplicator(object):
 
             self._process_stat(msg)
 
-            if msg == "0 END_DATA":
+            if msg == "{} {}".format(
+                    const.END_DATA_ID, const.END_DATA):
                 count += 1
 
     def run(self):
@@ -88,8 +97,6 @@ class DataReplicator(object):
         # Wait for user to start
         input('Enter to start')
         self._parse_data()
-        
-        self.socket.send("{data_id} END_DATA".format(data_id=const.END_DATA))
 
         self._receive_statistics()
 

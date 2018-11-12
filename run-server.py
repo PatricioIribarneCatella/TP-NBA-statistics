@@ -18,9 +18,20 @@ def run(summary_workers,
         topk_workers,
         topk_reducers,
         local_team_workers,
-        local_points_workers):
+        local_points_workers,
+        input_workers):
 
         pids = []
+
+        #########################
+        ## Input workers nodes ##
+        #########################
+
+        for wid in range(1, input_workers + 1):
+            p = Popen([PYTHON,
+                       NODES_DIR + "input_data_worker.py",
+                       CONFIG])
+            pids.append(p.pid)
 
         ###############################
         ## Match Summary spawn nodes ##
@@ -28,6 +39,7 @@ def run(summary_workers,
 
         p = Popen([PYTHON,
                    NODES_DIR + "match_summary_filter.py",
+                   "--iworkers={}".format(input_workers),
                    CONFIG])
         pids.append(p.pid)
 
@@ -79,6 +91,7 @@ def run(summary_workers,
 
         p = Popen([PYTHON,
                    NODES_DIR + "local_points_filter.py",
+                   "--iworkers={}".format(input_workers),
                    CONFIG])
         pids.append(p.pid)
 
@@ -100,6 +113,7 @@ def run(summary_workers,
 
         p = Popen([PYTHON,
                    NODES_DIR + "topk_filter.py",
+                   "--iworkers={}".format(input_workers),
                    CONFIG])
         pids.append(p.pid)
 
@@ -142,14 +156,16 @@ def main(summary_workers,
          topk_workers,
          topk_reducers,
          local_team_workers,
-         local_points_workers):
+         local_points_workers,
+         input_workers):
     
     pids = run(summary_workers,
                summary_reducers,
                topk_workers,
                topk_reducers,
                local_team_workers,
-               local_points_workers)
+               local_points_workers,
+               input_workers)
     
     store(pids)
 
@@ -195,6 +211,12 @@ if __name__ == "__main__":
             default=2,
             help='Number of Local Points workers'
     )
+    parser.add_argument(
+            '--iworkers',
+            type=int,
+            default=2,
+            help='Number of Input workers'
+    )
     
     args = parser.parse_args()
 
@@ -203,5 +225,6 @@ if __name__ == "__main__":
          args.topkworkers,
          args.topkreducers,
          args.ltworkers,
-         args.lpworkers)
+         args.lpworkers,
+         args.iworkers)
 

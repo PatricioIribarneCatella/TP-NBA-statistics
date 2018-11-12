@@ -1,5 +1,7 @@
 import zmq
 
+import middleware.constants as const
+
 class Proxy(object):
 
     def __init__(self, node, config):
@@ -49,7 +51,7 @@ class Proxy(object):
             # Message come from a joiner to stop
             if socks.get(self.signal_socket) == zmq.POLLIN:
                 end = self.signal_socket.recv_string()
-                if end == "END_DATA":
+                if end == const.END_DATA:
                     quit = True
 
         self.close()

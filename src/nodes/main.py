@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from coordinators.replicator import DataReplicator
+from coordinator.dispatcher import DataDispatcher
 
 def main(data, stats, pattern, num_of_stats, config):
 
@@ -19,9 +19,9 @@ def main(data, stats, pattern, num_of_stats, config):
     if not p.exists():
         p.mkdir()
 
-    replicator = DataReplicator(data, stats, pattern, num_of_stats, config_data)
+    dispatcher = DataDispatcher(data, stats, pattern, num_of_stats, config_data)
 
-    replicator.run()
+    dispatcher.run()
 
 if __name__ == '__main__':
 

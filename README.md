@@ -4,7 +4,7 @@ NBA statistics (Sistemas Distribuidos I)
 
 ### Ejecutar
 
-- Dependencias: [_virtualenv_](https://packaging.python.org/guides/installing-using-pip-and-virtualenv/) y [_ZeroMQ_](http://zeromq.org/) (en particular el _binding_ para [_Python_](https://pyzmq.readthedocs.io/en/latest/))
+- Dependencias: [_ZeroMQ_](http://zeromq.org/) (en particular el _binding_ para [_Python_](https://pyzmq.readthedocs.io/en/latest/))
 
 #### Cliente
 
@@ -24,7 +24,8 @@ En otra terminal se ejecuta el servidor:
 		   --topkworkers=NUM(1)  |
 		   --topkreducers=NUM(2) |
 		   --ltworkers=NUM(2)    |
-		   --lpworkers=NUM(2)    |]
+		   --lpworkers=NUM(2)    |
+		   --iworkers=NUM(2)]
 
 	Argumentos:
 	  - mworkers: Match Summary workers
@@ -33,6 +34,7 @@ En otra terminal se ejecuta el servidor:
 	  - topkreducers: Top K reducers
 	  - ltworkers: Local Team workers
 	  - lpworkers: Local Points workers
+	  - iworkers: Input workers
 ```
 Para terminar los nodos, ejecutar:
 

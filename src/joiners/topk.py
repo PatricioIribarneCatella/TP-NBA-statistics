@@ -38,7 +38,8 @@ class Topk(object):
                     const.TOPK_STAT, player_info[0], player_info[1]))
             print("{}, {}".format(player_info[0], player_info[1]))
 
-        self.stats_socket.send("0 END_DATA")
+        self.stats_socket.send("{} {}".format(
+            const.END_DATA_ID, const.END_DATA))
 
     def run(self):
 
@@ -50,7 +51,7 @@ class Topk(object):
 
             msg = self.socket.recv()
 
-            if msg == "END_DATA":
+            if msg == const.END_DATA:
                 end_data_counter += 1
             else:
                 self._process_data(msg)
@@ -58,7 +59,7 @@ class Topk(object):
         self._calculate_topk()
 
         # Send signal to proxy
-        self.signal_proxy_socket.send("END_DATA")
+        self.signal_proxy_socket.send(const.END_DATA)
 
         self.socket.close()
         self.signal_proxy_socket.close()
