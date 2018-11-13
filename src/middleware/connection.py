@@ -252,9 +252,7 @@ class WorkerSocket(object):
 
     def close(self):
         self.work_socket.close()
-        print("holaaaaaaaaaaaaaaaa 11111")
         self.control_socket.close()
-        print("holaaaaaaaaaaaaaaaa 22222")
         self.join_socket.close()
 
 
