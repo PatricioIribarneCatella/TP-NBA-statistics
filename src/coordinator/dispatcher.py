@@ -92,6 +92,12 @@ class DataDispatcher(object):
                     const.END_DATA_ID, const.END_DATA):
                 count += 1
 
+    def close(self):
+
+        self.socket.close()
+        self.stats_socket.close()
+        self.signal_socket.close()
+
     def run(self):
 
         # Wait for user to start
@@ -99,6 +105,8 @@ class DataDispatcher(object):
         self._parse_data()
 
         self._receive_statistics()
+
+        self.close()
 
         # Stats finished
         input('Enter to finish')

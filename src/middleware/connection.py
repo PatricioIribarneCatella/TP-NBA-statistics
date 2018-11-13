@@ -17,6 +17,7 @@ class ReplicationSocket(object):
         self.socket.bind("tcp://{}:{}".format(
                             net_config["ip"],
                             net_config["port"]))
+        self.socket.setsockopt(zmq.LINGER, -1)
 
     def send(self, msg):
 
@@ -38,6 +39,7 @@ class SuscriberSocket(object):
         self.socket.connect("tcp://{}:{}".format(
                                 net_config["ip"],
                                 net_config["port"]))
+        self.socket.setsockopt(zmq.LINGER, -1)
 
         # Set the suscriber topics
         for tid in topicids:
@@ -57,6 +59,7 @@ class PusherSocket(object):
         # Get the context and create the socket
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.PUSH)
+        self.socket.setsockopt(zmq.LINGER, -1)
 
     def send(self, msg):
 
@@ -102,6 +105,7 @@ class GatherSocket(object):
         self.socket.bind("tcp://{}:{}".format(
                             net_config["ip"],
                             net_config["port"]))
+        self.socket.setsockopt(zmq.LINGER, -1)
 
     def recv(self):
 
@@ -125,6 +129,7 @@ class InputWorkerSocket(object):
         self.work_socket.connect("tcp://{}:{}".format(
                                 net_to_dispatcher["ip"],
                                 net_to_dispatcher["port"]))
+        self.work_socket.setsockopt(zmq.LINGER, -1)
 
         # Channel to receive stop signal
         net_to_signal = net_config["signal"]["connect"]
@@ -133,6 +138,7 @@ class InputWorkerSocket(object):
                                     net_to_signal["ip"],
                                     net_to_signal["port"]))
         self.control_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+        self.control_socket.setsockopt(zmq.LINGER, -1)
 
         # Channels to send processed work
         net_to_filters = net_config["filters"]
@@ -141,6 +147,7 @@ class InputWorkerSocket(object):
         for net in net_to_filters:
             s = self.context.socket(zmq.PUSH)
             s.connect("tcp://{}:{}".format(net["ip"], net["port"]))
+            s.setsockopt(zmq.LINGER, -1)
             self.sockets.append(s)
 
         self.poll_sockets = {
@@ -245,7 +252,9 @@ class WorkerSocket(object):
 
     def close(self):
         self.work_socket.close()
+        print("holaaaaaaaaaaaaaaaa 11111")
         self.control_socket.close()
+        print("holaaaaaaaaaaaaaaaa 22222")
         self.join_socket.close()
 
 
