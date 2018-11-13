@@ -41,6 +41,11 @@ class Topk(object):
         self.stats_socket.send("{} {}".format(
             const.END_DATA_ID, const.END_DATA))
 
+    def close(self):
+
+        self.socket.close()
+        self.signal_proxy_socket.close()
+
     def run(self):
 
         print("Top K started")
@@ -61,9 +66,8 @@ class Topk(object):
         # Send signal to proxy
         self.signal_proxy_socket.send(const.END_DATA)
 
-        self.socket.close()
-        self.signal_proxy_socket.close()
-        
+        self.close()
+
         print("Top K finished")
 
 

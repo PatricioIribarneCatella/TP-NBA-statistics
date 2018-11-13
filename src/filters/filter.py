@@ -69,6 +69,12 @@ class FilterReplicator(object):
         
         self.dispatchsocket.send(msg)
 
+    def close(self):
+
+        self.socket.close()
+        self.dispatchsocket.close()
+        self.signalsocket.close()
+
     def run(self, node_name):
  
         print("{} Filter started".format(node_name))
@@ -91,6 +97,8 @@ class FilterReplicator(object):
 
         self.signalsocket.send("{} {}".format(
             const.END_DATA_ID, const.END_DATA))
+
+        self.close()
 
         print("{} Filter finished".format(node_name))
 

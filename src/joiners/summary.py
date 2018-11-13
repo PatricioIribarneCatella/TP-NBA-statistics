@@ -22,6 +22,13 @@ class MatchSummary(object):
         self.stat_socket = ProducerSocket(config["match-summary"]["stats"])
         self.signal_proxy_socket = ProducerSocket(config["match-summary"]["signal-proxy"])
 
+    def close(self):
+
+        self.socket.close()
+        self.dispatch_socket.close()
+        self.signal_socket.close()
+        self.signal_proxy_socket.close()
+
     def run(self):
 
         print("Match summary started")
@@ -51,11 +58,8 @@ class MatchSummary(object):
         # Send signal to the proxy
         self.signal_proxy_socket.send("{}".format(
             const.END_DATA))
-
-        self.socket.close()
-        self.dispatch_socket.close()
-        self.signal_socket.close()
-        self.signal_proxy_socket.close()
+        
+        self.close()
 
         print("Match summary finished")
 

@@ -13,6 +13,10 @@ class Worker(object):
 
         self.socket = WorkerSocket(config[node])
 
+    def close(self):
+
+        self.socket.close()
+
     def run(self, node_name):
         
         print("{} worker started".format(node_name))
@@ -39,6 +43,8 @@ class Worker(object):
                     end_data = True
 
         self._send_end_signal()
+
+        self.close()
 
         print("{} worker finished".format(node_name))
 

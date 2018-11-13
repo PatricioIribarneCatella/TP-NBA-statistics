@@ -38,6 +38,11 @@ class Reducer(object):
 
         return self._parse_data(data)
 
+    def close(self):
+
+        self.reduce_socket.close()
+        self.joiner_socket.close()
+
     def run(self, node_name):
 
         print("{} reducer started".format(node_name))
@@ -61,6 +66,8 @@ class Reducer(object):
         
         # Send 'end' message
         self.joiner_socket.send(const.END_DATA)
+
+        self.close()
 
         print("{} reducer finished".format(node_name))
 

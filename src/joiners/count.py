@@ -17,6 +17,11 @@ class LocalPointsCounter(object):
         self.socket = GatherSocket(config["local-points"])
         self.stats_socket = ProducerSocket(config["local-points"]["stats"])
 
+    def close(self):
+
+        self.socket.close()
+        self.stats_socket.close()
+
     def run(self):
         
         print("Local Points counter started")
@@ -50,6 +55,8 @@ class LocalPointsCounter(object):
         self.stats_socket.send("{} {}".format(
             const.END_DATA_ID, const.END_DATA))
 
+        self.close()
+
         print("2 pts: {}%, 3 pts: {}%".format(two_pts, three_pts))
         print("Local Points counter finished")
 
@@ -62,6 +69,11 @@ class LocalTeamCounter(object):
         self.workers = workers
         self.socket = GatherSocket(config["local-team"])
         self.stats_socket = ProducerSocket(config["local-team"]["stats"])
+
+    def close(self):
+
+        self.socket.close()
+        self.stats_socket.close()
 
     def run(self):
 
@@ -91,6 +103,8 @@ class LocalTeamCounter(object):
         self.stats_socket.send("{} {}".format(
             const.END_DATA_ID, const.END_DATA))
        
+        self.close()
+
         print("local team: {}%".format(local_team))
         print("Local Team counter finished")
 
