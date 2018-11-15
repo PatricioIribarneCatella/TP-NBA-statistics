@@ -58,7 +58,7 @@ class Reducer(object):
                 end_data_counter += 1
                 if end_data_counter == self.num_workers:
                     quit = True
-                    continue
+                continue
 
             self._process_data(key, data)
 
