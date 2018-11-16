@@ -44,8 +44,7 @@ class TopkWorker(Worker):
         player = self._find_item(msg, "player")
         points = self._find_item(msg, "points")
 
-        rid = hash("{}".format(player)) % self.num_reducers
-        rid += 1
+        rid = self.fhash("{}".format(player), self.num_reducers)
 
         msg = str(rid) + " "
         msg += "player=" + player + "\n"

@@ -56,8 +56,7 @@ class MatchSummaryWorker(Worker):
         home_points = self._find_item(msg, "home_points")
         away_points = self._find_item(msg, "away_points")
 
-        rid = hash("{},{},{}".format(home_team, away_team, date)) % self.num_reducers
-        rid += 1
+        rid = self.fhash("{},{},{}".format(home_team, away_team, date), self.num_reducers)
 
         msg = str(rid) + " "
         msg += "home_team=" + home_team + "\n"

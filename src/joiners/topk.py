@@ -23,10 +23,10 @@ class Topk(object):
 
         player, points = msg.split("\n")
 
-        self.data[player] = points
+        self.data[player] = int(points)
 
     def _calculate_topk(self):
-        
+
         items = list(self.data.items())
 
         s = sorted(items, key=lambda it: it[1], reverse=True)
