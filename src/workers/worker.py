@@ -13,6 +13,18 @@ class Worker(object):
 
         self.socket = WorkerSocket(config[node])
 
+    # Implementation of the hashing function
+    # to ensure consistency across different nodes
+    # "Rotating Hash"
+    def fhash(self, key, size):
+
+        h = 0
+
+        for i in range(len(key)):
+            h = (h<<4)^(h<<28)^(ord(key[i]))
+
+        return (h % size) + 1
+
     def close(self):
 
         self.socket.close()
