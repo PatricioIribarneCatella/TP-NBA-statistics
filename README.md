@@ -1,6 +1,6 @@
 # TP-NBA-statistics
 
-NBA statistics (Sistemas Distribuidos I)
+NBA statistics (_Sistemas Distribuidos I - FIUBA_)
 
 ### Ejecutar
 
